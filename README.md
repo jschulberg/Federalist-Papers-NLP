@@ -1,6 +1,5 @@
 # Federalist Papers NLP 
-
-This repository includes a thorough analysis of U.S. Police Fatalities. I will use a variety of exploratory and modeling techniques to answer the following questions:  
+This repository includes a thorough text analysis of the Federalist Papers.  
 
 - How many people have been killed by police over time?
 - What is the race/age/gender of these people?
