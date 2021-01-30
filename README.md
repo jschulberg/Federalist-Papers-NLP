@@ -1,5 +1,5 @@
 # Federalist Papers NLP 
-This repository includes a thorough text analysis of The (Federalist Papers)[https://guides.loc.gov/federalist-papers/full-text].  The Federalist Papers is a series of 85 essays written by Founding Fathers Alexander Hamilton, John Jay, and James Madison before the ratification of the Constitution.
+This repository includes a thorough text analysis of The [Federalist Papers](https://guides.loc.gov/federalist-papers/full-text).  The Federalist Papers is a series of 85 essays written by Founding Fathers Alexander Hamilton, John Jay, and James Madison before the ratification of the Constitution.
 There are many interesting applications of advanced text analysis, or Natural Language Processing (NLP), that can be applied to the Federalist Papers. In particular, this project aims to do the following:
 
  - Basic text analysis of the papers (word count, document length, etc.)
