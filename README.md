@@ -1,4 +1,5 @@
-# U.S.-Police-Fatalities
+# Federalist Papers NLP 
+
 This repository includes a thorough analysis of U.S. Police Fatalities. I will use a variety of exploratory and modeling techniques to answer the following questions:  
 
 - How many people have been killed by police over time?
