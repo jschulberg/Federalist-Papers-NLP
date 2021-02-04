@@ -6,3 +6,9 @@ import pandas as pd
 import nltk
 nltk.download('punkt')
 import re
+
+df = pd.read_csv("C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt",sep='delimiter', header=None)
+
+df.columns = ['Text']
+df.index.names = ['Line']
+
