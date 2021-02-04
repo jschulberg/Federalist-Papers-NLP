@@ -12,3 +12,10 @@ df = pd.read_csv("C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt",sep=
 df.columns = ['Text']
 df.index.names = ['Line']
 
+from nltk.tokenize import sent_tokenize
+sentences = []
+for sentence in df['Text']:
+    sentences.append(sent_tokenize(sentence))
+
+sentences = [y for x in sentences for y in x] 
+
