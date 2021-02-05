@@ -10,11 +10,14 @@ import spacy
 from spacy.lang.en.stop_words import stop_words
 from string import punctuation 
 
+#Load Data
 df = pd.read_csv("C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt",sep='delimiter', header=None)
 
+#Create columns and index
 df.columns = ['Text']
 df.index.names = ['Line']
 
+#tokenize
 from nltk.tokenize import sent_tokenize
 sentences = []
 for sentence in df['Text']:
@@ -22,4 +25,7 @@ for sentence in df['Text']:
 
 sentences = [y for x in sentences for y in x] 
 
-
+#Finding the most common words
+import re
+words = re.findall('\w+', open("C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt").read().lower())
+Counter(words).most_common(100)
