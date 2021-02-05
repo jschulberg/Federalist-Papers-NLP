@@ -29,3 +29,16 @@ sentences = [y for x in sentences for y in x]
 import re
 words = re.findall('\w+', open("C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt").read().lower())
 Counter(words).most_common(100)
+
+#Combining all files together 
+import io
+
+essays = ['C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt','C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay02.txt']
+lines = io.StringIO()   
+for file_dir in files:
+    with open(file_dir, 'r') as file:
+        lines.write(file.read())
+        lines.write('\n')
+
+lines.seek(0)       
+print(lines.read())
