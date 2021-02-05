@@ -6,6 +6,9 @@ import pandas as pd
 import nltk
 nltk.download('punkt')
 import re
+import spacy 
+from spacy.lang.en.stop_words import stop_words
+from string import punctuation 
 
 df = pd.read_csv("C:\\Users\\sabri\\Desktop\\Federalist\\Data\\essay01.txt",sep='delimiter', header=None)
 
@@ -18,4 +21,5 @@ for sentence in df['Text']:
     sentences.append(sent_tokenize(sentence))
 
 sentences = [y for x in sentences for y in x] 
+
 
