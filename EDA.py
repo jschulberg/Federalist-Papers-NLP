@@ -96,7 +96,10 @@ cleaned_df_filtered.head(10)
 tokenized_clean = cleaned_df_filtered.copy()
 
 tokenized_clean['lines'] = tokenized_clean['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
-                                                            
+                                            
+# TODO: remove stop words
+
+# TODO: make everything lower case                
 
 
 #%% Tokenization
