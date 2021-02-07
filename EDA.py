@@ -95,7 +95,7 @@ cleaned_df_filtered.head(10)
 # punctuation, everything lowercase, removal of stop words, etc.
 tokenized_clean = cleaned_df_filtered.copy()
 
-tokenized_clean['lines_cleaned'] = tokenized_clean['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
+tokenized_clean['lines'] = tokenized_clean['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
                                                             
 
 
@@ -108,13 +108,14 @@ tokenized_clean['lines_cleaned'] = tokenized_clean['lines'].str.replace('[^A-z]'
 tokenized_df = tokenized_clean.copy()
 
 # Let's look at one tokenized output
-word_tokenize(tokenized_df['lines_cleaned'][1])
+word_tokenize(tokenized_df['lines'][1])
 
 # Tokenize the words for every row
-tokenized_df['tokenized'] = tokenized_df['lines_cleaned'].apply(nltk.word_tokenize)
+tokenized_df['tokenized'] = tokenized_df['lines'].apply(nltk.word_tokenize)
 
 # This puts the words in a given line as a list, but we still need this "exploded"
-# into separate rows
+# into separate rows. Note: This will end up enlarging our dataframe from 16,000
+# rows to almost 200,000!
 tokenized_df = tokenized_df.explode('tokenized')
 
 
