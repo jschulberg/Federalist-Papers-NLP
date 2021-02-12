@@ -12,6 +12,8 @@ import re
 import spacy 
 # from spacy.lang.en.stop_words import stop_words
 from string import punctuation 
+from nltk.tokenize import sent_tokenize #adding tockenize libraries
+from nltk.tokenize import word_tokenize
 
 
 #%% Load Data
