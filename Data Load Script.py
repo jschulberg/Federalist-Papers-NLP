@@ -15,13 +15,16 @@ Created on Sat Feb 13 11:18:02 2021
 #%%
 import pandas as pd
 import nltk
-nltk.download('punkt')
 import os
 import requests
-# from spacy.lang.en.stop_words import stop_words
+
+### NLTK Download
+# Note: To download nltk products, you need to run the nltk downloader. If you 
+# just want to run this quickly, uncomment the following line and run:
+# nltk.download('popular')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-stop = stopwords.words('english')
+
 
 # ----------------------------------------------------------------------------
 #                       Combining all files together 
@@ -53,7 +56,7 @@ for text_file in files:
     # Append the temporary dataframe with all corresponding text into our master dataframe
     text_df = text_df.append(temp_df)
 
-#%%% Take a look at our data
+# Take a look at our data
 text_df.head(10)
 
 
@@ -80,23 +83,25 @@ cleaned_df.reset_index(drop = True, inplace = True)
 # Because I use a Mac, some rows are .DS_Store, so let's filter those out
 cleaned_df_filtered = cleaned_df[cleaned_df['essay'] != '.DS_Store']
 
-cleaned_df_filtered.head(10)
-
 
 #%% It's important to ensure that the text we analyze is clean. That is, no
 # punctuation, everything lowercase, removal of stop words, etc.
+stop = stopwords.words('english')
 
 cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
                                             
-# TODO: remove stop words
-cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
+# TODO: remove stop words -- this isn't working for me :(
+cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x for x in x.split()))
 
-# TODO: make everything lower case                
-cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x.lower() for x in x.split()))
+# make everything lower case                
+cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x.lower() for x in x.split() if x not in stop))
 
 
 ## Removing puncutation 
 # cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].str.replace('[^\w\s]','')
+
+
+cleaned_df_filtered.head(10)
 
 
 # ----------------------------------------------------------------------------
@@ -189,14 +194,20 @@ authors_clean['Publication'] = authors_clean['Publication'].replace('--', 'Unkno
 
 
 
-# ----------------------------------------------------------------------------
+# ---------------------------------------------------------------------------- 
 #                             Join Authorship Data
 # ----------------------------------------------------------------------------
 #%% Using the work we prepared above, let's merge this with our actual data.
 joined_fedpapers = tokenized_df.merge(authors_clean, 
-                                      on = ['essay', 'Essay'],
+                                      left_on = 'essay',
+                                      right_on = 'Essay',
                                       how = 'left')
+
+joined_fedpapers.head(10)
 
 # ----------------------------------------------------------------------------
 #                                  Save Work
 # ----------------------------------------------------------------------------
+# Let's write our final dataframe out to a csv file so it's easier to do EDA.
+joined_fedpapers.to_csv("Data/full_fedpapers.csv")
+
