@@ -171,11 +171,11 @@ print(authors)
     # 4. Replace blank ('--') publications with 'Unknown'
     
 # Make a copy of the dataframe to work off and rename the 'No.' column
-authors_clean = authors.copy().rename(columns = {'No.': 'essay'})
+authors_clean = authors.copy().rename(columns = {'No.': 'Essay'})
 
 # Convert "No." to an integer column to get rid of the '.0' and then to a string
 # so we can append 'Essay ' to the beginning of it
-authors_clean['essay'] = "Essay " + authors_clean['essay'].astype('int').astype('str')
+authors_clean['Essay'] = "Essay " + authors_clean['Essay'].astype('int').astype('str')
 
 # Replace authors for 'Hamilton or Madison' with 'Unknown'
 authors_clean['Author'] = authors_clean['Author'].replace('Hamilton or Madison', "Unknown") 
@@ -190,7 +190,13 @@ authors_clean['Publication'] = authors_clean['Publication'].replace('--', 'Unkno
 
 
 # ----------------------------------------------------------------------------
-#                           Join Authorship Data
+#                             Join Authorship Data
 # ----------------------------------------------------------------------------
 #%% Using the work we prepared above, let's merge this with our actual data.
-joined_fedpapers = tokenized_df.merge(authors_clean, on = ['essay', 'essay'])
+joined_fedpapers = tokenized_df.merge(authors_clean, 
+                                      on = ['essay', 'Essay'],
+                                      how = 'left')
+
+# ----------------------------------------------------------------------------
+#                                  Save Work
+# ----------------------------------------------------------------------------
