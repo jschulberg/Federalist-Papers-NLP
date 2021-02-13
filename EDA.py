@@ -14,6 +14,8 @@ import spacy
 from string import punctuation 
 from nltk.tokenize import sent_tokenize #adding tockenize libraries
 from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+stop = stopwords.words('english')
 
 
 #%% Load Data
@@ -91,6 +93,9 @@ cleaned_df_filtered = cleaned_df[cleaned_df['essay'] != '.DS_Store']
 
 cleaned_df_filtered.head(10)
 
+##EDA prior to Text Cleaning
+tokenized_clean['word_count'] = tokenized_clean['lines'].apply(lambda x: len(str(x).split(" ")))
+tokenized_clean[['lines','word_count', 'essay']].head()
 
 #%% Text Cleaning
 # It's important to ensure that the text we analyze is clean. That is, no
@@ -100,8 +105,15 @@ tokenized_clean = cleaned_df_filtered.copy()
 tokenized_clean['lines'] = tokenized_clean['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
                                             
 # TODO: remove stop words
+tokenized_clean['lines'] = tokenized_clean['lines'].apply(lambda x: " ".join(x for x in x.split() if x not in stop))
 
 # TODO: make everything lower case                
+tokenized_clean['lines'] = tokenized_clean['lines'].apply(lambda x: " ".join(x.lower() for x in x.split()))
+
+
+##Removing puncutation 
+##tokenized_clean['lines'] = tokenized_clean['lines'].str.replace('[^\w\s]','')
+
 
 
 #%% Tokenization
