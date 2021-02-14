@@ -23,11 +23,13 @@ import matplotlib.pyplot as plt
 # can just reference the "Data" folder without all the stuff that comes before it.
 fed_papers = pd.read_csv("Data/full_fedpapers.csv")
 
+print(fed_papers.head())
+
 
 # ----------------------------------------------------------------------------
 #                             Viz 1: Top 20 Words
 # ----------------------------------------------------------------------------
-#%% Our first visualization constitutes the top 20 words across all documents.
+#%% Our first visualization counts the top 20 words across all documents.
 
 # Start by creating a grouped dataframe of our word counts
 word_counts = fed_papers.groupby(['word']) \
@@ -40,7 +42,8 @@ print(word_counts.head(10))
       
 # Before we move on, there are a lot of unnecessary words here! Let's filter
 # some of these (stop words) out.
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 'also', 'ought']
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought']
 
 words_nonstop = word_counts.copy()
 words_nonstop = words_nonstop[~words_nonstop['word'].isin(stop_words)]
@@ -96,5 +99,46 @@ viz1.figure.savefig("Viz/Top 20 Words.png")
 # ----------------------------------------------------------------------------
 #                          Viz 4: Document Lengths
 # ----------------------------------------------------------------------------
-#%% TODO: Our fourth visualization will look at the lengths of each document,
+#%% Our fourth visualization will look at the lengths of each document,
 # as well as the average length of each one.
+doc_lengths = fed_papers.groupby(['essay']) \
+    .size() \
+    .reset_index(name = 'length') \
+    .sort_values('length', ascending = False) \
+    .reset_index(drop = True)
+
+viz4 = sns.violinplot(y = doc_lengths['length'], 
+               color = "Slateblue")
+
+# Set our labels
+viz4.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
+plt.show()
+
+# Save our plot to the Viz folder 
+viz4.figure.savefig("Viz/Document Lengths.png")
+
+
+# ----------------------------------------------------------------------------
+#                      Viz 5: Document Lengths by Author
+# ----------------------------------------------------------------------------
+#%% Our fifth visualization will look at the lengths of each document,
+# as well as the average length of each one, disaggregated by author
+doc_lengths = fed_papers.groupby(['essay', 'Author']) \
+    .size() \
+    .reset_index(name = 'length') \
+    .sort_values('length', ascending = False) \
+    .reset_index(drop = True)
+
+viz5 = sns.catplot(x = 'Author',
+                      y = 'length',
+                      data = doc_lengths,
+                      hue = 'Author',
+                      palette = 'Purples_r')
+                      # color = "Slateblue")
+
+# Set our labels
+viz5.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Federalist Papers by Author')
+plt.show()
+
+# Save our plot to the Viz folder 
+viz5.savefig("Viz/Document Lengths by Author.png")
