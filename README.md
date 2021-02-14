@@ -15,6 +15,7 @@ The repository is organized as follows:
 | --- | --- |
 | Code | This section includes all of the Python code used on The Federalist Papers dataset. |
 | Data | This section includes the main datasets used throughout the analyses. |
+| Viz | This section contains all the visualizations produced in the analyses. |
 
 
 ### Note about the Data  
