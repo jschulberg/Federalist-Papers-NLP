@@ -145,7 +145,8 @@ tokenized_df = tokenized_df.replace("Essay 04", "Essay 4")
 tokenized_df = tokenized_df.replace("Essay 05", "Essay 5")
 tokenized_df = tokenized_df.replace("Essay 06", "Essay 6")
 tokenized_df = tokenized_df.replace("Essay 07", "Essay 8")
-tokenized_df = tokenized_df.replace("Essay 019", "Essay 9")
+tokenized_df = tokenized_df.replace("Essay 08", "Essay 8")
+tokenized_df = tokenized_df.replace("Essay 09", "Essay 9")
 
 
 # ----------------------------------------------------------------------------
@@ -218,9 +219,9 @@ authors_clean['Publication'] = authors_clean['Publication'].replace('--', 'Unkno
 # ----------------------------------------------------------------------------
 #%% Using the work we prepared above, let's merge this with our actual data.
 joined_fedpapers = tokenized_df.merge(authors_clean, 
-                                      left_on = 'essay',
+                                      left_on = 'Essay',
                                       right_on = 'Essay',
-                                      how = 'left')
+                                      how = 'inner')
 
 print(joined_fedpapers.head(10))
 
