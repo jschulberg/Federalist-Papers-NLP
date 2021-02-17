@@ -134,6 +134,18 @@ tokenized_df = tokenized_df.explode('word')
 
 print(tokenized_df.head(10))
 
+#Renamed the column here to "Essay" so that we can perform an inner join. 
+tokenized_df = tokenized_df.rename(columns = {'essay': 'Essay'})
+
+#Rnamed all the Essays so that they would match up to the authors_clean dataframe when merging. 
+tokenized_df = tokenized_df.replace("Essay 01", "Essay 1")
+tokenized_df = tokenized_df.replace("Essay 02", "Essay 2")
+tokenized_df = tokenized_df.replace("Essay 03", "Essay 3")
+tokenized_df = tokenized_df.replace("Essay 04", "Essay 4")
+tokenized_df = tokenized_df.replace("Essay 05", "Essay 5")
+tokenized_df = tokenized_df.replace("Essay 06", "Essay 6")
+tokenized_df = tokenized_df.replace("Essay 07", "Essay 8")
+tokenized_df = tokenized_df.replace("Essay 019", "Essay 9")
 
 
 # ----------------------------------------------------------------------------
