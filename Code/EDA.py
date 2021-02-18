@@ -71,35 +71,11 @@ plt.show()
 # Save our plot to the Viz folder 
 viz1.figure.savefig("Viz/Top 20 Words.png")
 
-      
-# ----------------------------------------------------------------------------
-#                         Viz 2: Top 10 Words by Author
-# ----------------------------------------------------------------------------
-#%% TODO: Our second visualization constitutes a bar chart of the top 10 words  
-# by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
-# Unknown).
-
-
 
 # ----------------------------------------------------------------------------
-#                      Viz 3: Word Count vs. Word Frequency
+#                          Viz 2: Document Lengths
 # ----------------------------------------------------------------------------
-#%% TODO: Our third visualization constitues a scatter plot of all the words
-# that could reasonably appear in our dataset, measuring the number of times
-# each one appears as well as the number of documents it appears in.
-
-# The hope here is to take a look at what will eventually be the TF-IDF of each
-# word: that way we can filter out words that appear many times but only in very
-# few documents (i.e. 'Constitution' appears 100 times in total but 95 times
-# in Essay 100.)
-
-
-
-
-# ----------------------------------------------------------------------------
-#                          Viz 4: Document Lengths
-# ----------------------------------------------------------------------------
-#%% Our fourth visualization will look at the lengths of each document,
+#%% Our second visualization will look at the lengths of each document,
 # as well as the average length of each one.
 doc_lengths = fed_papers.groupby(['essay']) \
     .size() \
@@ -107,21 +83,21 @@ doc_lengths = fed_papers.groupby(['essay']) \
     .sort_values('length', ascending = False) \
     .reset_index(drop = True)
 
-viz4 = sns.violinplot(y = doc_lengths['length'], 
+viz2 = sns.violinplot(y = doc_lengths['length'], 
                color = "Slateblue")
 
 # Set our labels
-viz4.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
+viz2.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz4.figure.savefig("Viz/Document Lengths.png")
+viz2.figure.savefig("Viz/Document Lengths.png")
 
 
 # ----------------------------------------------------------------------------
-#                      Viz 5: Document Lengths by Author
+#                      Viz 3: Document Lengths by Author
 # ----------------------------------------------------------------------------
-#%% Our fifth visualization will look at the lengths of each document,
+#%% Our third visualization will look at the lengths of each document,
 # as well as the average length of each one, disaggregated by author
 doc_lengths = fed_papers.groupby(['essay', 'Author']) \
     .size() \
@@ -129,7 +105,7 @@ doc_lengths = fed_papers.groupby(['essay', 'Author']) \
     .sort_values('length', ascending = False) \
     .reset_index(drop = True)
 
-viz5 = sns.catplot(x = 'Author',
+viz3 = sns.catplot(x = 'Author',
                       y = 'length',
                       data = doc_lengths,
                       hue = 'Author',
@@ -137,8 +113,9 @@ viz5 = sns.catplot(x = 'Author',
                       # color = "Slateblue")
 
 # Set our labels
-viz5.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Federalist Papers by Author')
+viz3.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Federalist Papers by Author')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz5.savefig("Viz/Document Lengths by Author.png")
+viz3.savefig("Viz/Document Lengths by Author.png")
+
