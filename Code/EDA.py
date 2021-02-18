@@ -119,3 +119,207 @@ plt.show()
 # Save our plot to the Viz folder 
 viz3.savefig("Viz/Document Lengths by Author.png")
 
+# ----------------------------------------------------------------------------
+#                         Viz 4-7: Top 10 Words by Author
+# ----------------------------------------------------------------------------
+#%% TODO: Our fourth  through seventh  visualization constitutes a bar chart of the top 10 words  
+# by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
+# Unknown).
+
+#Hamilton - Visualization 4------------------------------------------------------
+
+doc_lengths = fed_papers.groupby(['Author','word']) \
+    .Essay.count() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
+
+Hamilton_words = doc_lengths.loc[doc_lengths.Author == 'Hamilton']
+Hamilton_top_words = Hamilton_words.head(13)
+
+#Stop Words
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought']
+
+Hamilton_top_words = Hamilton_top_words.copy()
+Hamilton_top_words = Hamilton_top_words[~Hamilton_top_words['word'].isin(stop_words)]
+
+# Set the theme
+sns.set_style('white')
+sns.set_context('notebook')
+
+# Build the visualization
+viz4 = sns.barplot(x = 'word',
+            y = 'count',
+            data = Hamilton_top_words,
+            palette = "flare")
+
+#Rotate X tick labels
+viz4.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
+
+# Set our labels
+viz4.set(xlabel='word', ylabel='count', title = 'Hamilton Top Words')
+plt.show()
+
+# Save our plot to the Viz folder 
+viz4.savefig("Viz/Hamilton Top Words.png")
+
+#John Jay - Visualization 5--------------------------------------------------
+
+doc_lengths = fed_papers.groupby(['Author','word']) \
+    .Essay.count() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
+
+Jay_top = doc_lengths.loc[doc_lengths.Author == 'Jay']
+Jay_top_words = Jay_top.head(12)
+
+#Stop Words
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought']
+
+Jay_top_words = Jay_top_words.copy()
+Jay_top_words = Jay_top_words[~Jay_top_words['word'].isin(stop_words)]
+
+# Set the theme
+sns.set_style('white')
+sns.set_context('notebook')
+
+# Build the visualization
+viz5 = sns.barplot(x = 'word',
+            y = 'count',
+            data = Jay_top_words,
+            palette = "mako")
+
+#Rotate X tick labels
+viz5.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
+
+# Set our labels
+viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
+plt.show()
+
+# Save our plot to the Viz folder 
+viz5.savefig("Viz/Jay Top Words.png")
+
+#Madison - Visualization 6-------------------------------------------------------
+
+doc_lengths = fed_papers.groupby(['Author','word']) \
+    .Essay.count() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
+
+Madison_top = doc_lengths.loc[doc_lengths.Author == 'Madison']
+Madison_top_words = Madison_top.head(12)
+
+#Stop Words
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought']
+
+Madison_top_words = Madison_top_words.copy()
+Madison_top_words = Madison_top_words[~Madison_top_words['word'].isin(stop_words)]
+
+# Set the theme
+sns.set_style('white')
+sns.set_context('notebook')
+
+# Build the visualization
+viz6 = sns.barplot(x = 'word',
+            y = 'count',
+            data = Madison_top_words,
+            palette = "coolwarm")
+
+#Rotate X tick labels
+viz6.set_xticklabels(viz7.get_xticklabels(), rotation=45 )
+
+# Set our labels
+viz6.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
+plt.show()
+
+# Save our plot to the Viz folder 
+viz6.savefig("Viz/Madison Top Words.png")
+
+
+#Unknown - Visualization 7-------------------------------------------------------
+
+doc_lengths = fed_papers.groupby(['Author','word']) \
+    .Essay.count() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
+
+Unknown_top = doc_lengths.loc[doc_lengths.Author == 'Unknown']
+Unknown_top_words = Unknown_top.head(13)
+
+#Stop Words
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought']
+
+Unknown_top_words = Unknown_top_words.copy()
+Unknown_top_words = Unknown_top_words[~Unknown_top_words['word'].isin(stop_words)]
+
+# Set the theme
+sns.set_style('white')
+sns.set_context('notebook')
+
+# Build the visualization
+viz7 = sns.barplot(x = 'word',
+            y = 'count',
+            data = Unknown_top_words,
+            palette = "YlOrBr")
+
+#Rotate X tick labels
+viz7.set_xticklabels(viz8.get_xticklabels(), rotation=45 )
+
+# Set our labels
+viz7.set(xlabel='word', ylabel='count', title = 'Unknown Top Words')
+plt.show()
+
+
+# Save our plot to the Viz folder 
+viz7.savefig("Viz/Unknown Top Words.png")
+
+# ----------------------------------------------------------------------------
+#                      Viz 8: Word Count vs. Word Frequency
+# ----------------------------------------------------------------------------
+#%% TODO: Our eighth visualization constitues a scatter plot of all the words
+# that could reasonably appear in our dataset, measuring the number of times
+# each one appears as well as the number of documents it appears in.
+
+# The hope here is to take a look at what will eventually be the TF-IDF of each
+# word: that way we can filter out words that appear many times but only in very
+# few documents (i.e. 'Constitution' appears 100 times in total but 95 times
+# in Essay 100.)
+
+
+doc_lengths = fed_papers.groupby(['word','Essay']) \
+    .Essay.count() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
+
+#Looking at which essays government appears more frequently 
+word_frequency= doc_lengths.loc[doc_lengths.word.isin([ 'one', 'government', 'people'])]
+
+#If we wanted to look at the percentage in total papers
+##word_frequency['% of total papers'] = word_frequency['count'] / word_frequency['count'].sum()
+
+#Remove "Essay" from the Essay columns so we are only left with the number - just so we can fit everything into the graph
+word_frequency['Essay'] = pd.to_numeric(word_frequency['Essay'].astype(str).str[5:], errors='coerce')
+
+word_frequency.head()
+
+#Resize the plot
+plt.figure(figsize=(10,5))
+viz8 = sns.scatterplot(data=word_frequency, x="Essay", y="count", hue = 'word')
+
+#Redo the x axis ticks 
+
+viz8.xaxis.set_major_locator(ticker.MultipleLocator(5))
+viz8.xaxis.set_major_formatter(ticker.ScalarFormatter())
+#Rotate X tick labels
+plt.show()
+
+# Save our plot to the Viz folder 
+viz8.savefig("Viz/Word Counts in Essays.png")
