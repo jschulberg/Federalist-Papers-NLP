@@ -135,11 +135,11 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
     .reset_index(drop = True)
 
 Hamilton_words = doc_lengths.loc[doc_lengths.Author == 'Hamilton']
-Hamilton_top_words = Hamilton_words.head(13)
+Hamilton_top_words = Hamilton_words.head(17)
 
 #Stop Words
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought']
+              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Hamilton_top_words = Hamilton_top_words.copy()
 Hamilton_top_words = Hamilton_top_words[~Hamilton_top_words['word'].isin(stop_words)]
@@ -173,11 +173,11 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
     .reset_index(drop = True)
 
 Jay_top = doc_lengths.loc[doc_lengths.Author == 'Jay']
-Jay_top_words = Jay_top.head(12)
+Jay_top_words = Jay_top.head(17)
 
 #Stop Words
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought']
+              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Jay_top_words = Jay_top_words.copy()
 Jay_top_words = Jay_top_words[~Jay_top_words['word'].isin(stop_words)]
@@ -211,11 +211,11 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
     .reset_index(drop = True)
 
 Madison_top = doc_lengths.loc[doc_lengths.Author == 'Madison']
-Madison_top_words = Madison_top.head(12)
+Madison_top_words = Madison_top.head(15)
 
 #Stop Words
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought']
+              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Madison_top_words = Madison_top_words.copy()
 Madison_top_words = Madison_top_words[~Madison_top_words['word'].isin(stop_words)]
@@ -250,11 +250,11 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
     .reset_index(drop = True)
 
 Unknown_top = doc_lengths.loc[doc_lengths.Author == 'Unknown']
-Unknown_top_words = Unknown_top.head(13)
+Unknown_top_words = Unknown_top.head(19)
 
 #Stop Words
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought']
+              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Unknown_top_words = Unknown_top_words.copy()
 Unknown_top_words = Unknown_top_words[~Unknown_top_words['word'].isin(stop_words)]
@@ -299,7 +299,7 @@ doc_lengths = fed_papers.groupby(['word','Essay']) \
     .sort_values('count', ascending = False) \
     .reset_index(drop = True)
 
-#Looking at which essays government appears more frequently 
+#Looking at which essays government and other words appears more frequently 
 word_frequency= doc_lengths.loc[doc_lengths.word.isin([ 'one', 'government', 'people'])]
 
 #If we wanted to look at the percentage in total papers
@@ -323,3 +323,5 @@ plt.show()
 
 # Save our plot to the Viz folder 
 viz8.savefig("Viz/Word Counts in Essays.png")
+
+####W should look for key words that would are unique to each author. Eventually do TF-IDF code here. 
