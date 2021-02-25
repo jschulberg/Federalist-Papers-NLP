@@ -25,35 +25,53 @@ fed_papers = pd.read_csv("Data/full_fedpapers.csv")
 
 print(fed_papers.head())
 
+#%%
+# ----------------------------------------------------------------------------
+#                             Data Prep
+# ----------------------------------------------------------------------------
+# First, let's create a few dataframes that can be used for analysis purposes later on
+# Before we move on, there are a lot of unnecessary words here! Let's filter
+# some of these (stop words) out.
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
+              'this', 'might', 'and', 'us', 'can', 'as', 'to']
 
-# ----------------------------------------------------------------------------
-#                             Viz 1: Top 20 Words
-# ----------------------------------------------------------------------------
-#%% Our first visualization counts the top 20 words across all documents.
+fed_nonstop = fed_papers.copy()
+fed_nonstop = fed_nonstop[~fed_nonstop['word'].isin(stop_words)]
+
+# It also looks like there are words that should be counted together (i.e. state
+# and states). Let's use a lemmatizer to solve this.
+
+
 
 # Start by creating a grouped dataframe of our word counts
-word_counts = fed_papers.groupby(['word']) \
+word_counts = fed_nonstop.groupby(['word']) \
     .size() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
     .reset_index(drop = True)
 
 print(word_counts.head(10))
-      
-# Before we move on, there are a lot of unnecessary words here! Let's filter
-# some of these (stop words) out.
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought']
 
-words_nonstop = word_counts.copy()
-words_nonstop = words_nonstop[~words_nonstop['word'].isin(stop_words)]
+# Now let's create a grouped dataframe that counts the number of documents
+# a given word appears in (document frequency). This is important to help us identify
+# words that may appear many times but in the same document. A word is considered
+# more "important" if it is not just a frequently occuring word within a document, but a word that
+# appears across many documents
+doc_freq = fed_nonstop[['word', 'Essay']].drop_duplicates() \
+    .groupby(['word']) \
+    .size() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
 
-print(words_nonstop.head(10))
-
-# It also looks like there are words that should be counted together (i.e. state
-# and states). Let's use a lemmatizer to solve this.
+print(doc_freq.head(10))
 
 
+# ----------------------------------------------------------------------------
+#                             Viz 1: Top 20 Words
+# ----------------------------------------------------------------------------
+#%% Our first visualization counts the top 20 words across all documents.
 # Set the theme
 sns.set_style('white')
 sns.set_context('notebook')
