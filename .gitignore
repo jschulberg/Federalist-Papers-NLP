@@ -6,3 +6,5 @@
 .DS_Store
 
 .spyproject/config/workspace.ini
+
+.spyproject/config/backups/workspace.ini.bak
