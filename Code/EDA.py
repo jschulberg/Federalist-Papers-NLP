@@ -10,6 +10,7 @@
 
 #%% Load Data and import packages
 import pandas as pd
+import numpy as np
 import nltk
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -53,19 +54,7 @@ word_counts = fed_nonstop.groupby(['word']) \
 
 print(word_counts.head(10))
 
-# Now let's create a grouped dataframe that counts the number of documents
-# a given word appears in (document frequency). This is important to help us identify
-# words that may appear many times but in the same document. A word is considered
-# more "important" if it is not just a frequently occuring word within a document, but a word that
-# appears across many documents
-doc_freq = fed_nonstop[['word', 'Essay']].drop_duplicates() \
-    .groupby(['word']) \
-    .size() \
-    .reset_index(name = 'count') \
-    .sort_values('count', ascending = False) \
-    .reset_index(drop = True)
 
-print(doc_freq.head(10))
 
 
 # ----------------------------------------------------------------------------
@@ -155,9 +144,6 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
 Hamilton_words = doc_lengths.loc[doc_lengths.Author == 'Hamilton']
 Hamilton_top_words = Hamilton_words.head(17)
 
-#Stop Words
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Hamilton_top_words = Hamilton_top_words.copy()
 Hamilton_top_words = Hamilton_top_words[~Hamilton_top_words['word'].isin(stop_words)]
@@ -193,9 +179,7 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
 Jay_top = doc_lengths.loc[doc_lengths.Author == 'Jay']
 Jay_top_words = Jay_top.head(17)
 
-#Stop Words
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought', 'the', 'it', 'i', 'upon']
+
 
 Jay_top_words = Jay_top_words.copy()
 Jay_top_words = Jay_top_words[~Jay_top_words['word'].isin(stop_words)]
@@ -230,10 +214,6 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
 
 Madison_top = doc_lengths.loc[doc_lengths.Author == 'Madison']
 Madison_top_words = Madison_top.head(15)
-
-#Stop Words
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Madison_top_words = Madison_top_words.copy()
 Madison_top_words = Madison_top_words[~Madison_top_words['word'].isin(stop_words)]
@@ -270,9 +250,6 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
 Unknown_top = doc_lengths.loc[doc_lengths.Author == 'Unknown']
 Unknown_top_words = Unknown_top.head(19)
 
-#Stop Words
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought', 'the', 'it', 'i', 'upon']
 
 Unknown_top_words = Unknown_top_words.copy()
 Unknown_top_words = Unknown_top_words[~Unknown_top_words['word'].isin(stop_words)]
@@ -301,7 +278,7 @@ viz7.savefig("Viz/Unknown Top Words.png")
 # ----------------------------------------------------------------------------
 #                      Viz 8: Word Count vs. Word Frequency
 # ----------------------------------------------------------------------------
-#%% TODO: Our eighth visualization constitues a scatter plot of all the words
+#%% Our eighth visualization constitues a scatter plot of all the words
 # that could reasonably appear in our dataset, measuring the number of times
 # each one appears as well as the number of documents it appears in.
 
@@ -310,36 +287,116 @@ viz7.savefig("Viz/Unknown Top Words.png")
 # few documents (i.e. 'Constitution' appears 100 times in total but 95 times
 # in Essay 100.)
 
+# Now let's create a grouped dataframe that counts the number of documents
+# a given word appears in (document frequency). This is important to help us identify
+# words that may appear many times but in the same document. A word is considered
+# more "important" if it is not just a frequently occuring word within a document, but a word that
+# appears across many documents
+# doc_lengths = fed_nonstop.groupby(['word','Essay']) \
+#     .Essay.count() \
+#     .reset_index(name = 'count') \
+#     .sort_values('count', ascending = False) \
+#     .reset_index(drop = True)
 
-doc_lengths = fed_papers.groupby(['word','Essay']) \
-    .Essay.count() \
-    .reset_index(name = 'count') \
-    .sort_values('count', ascending = False) \
+doc_lengths = fed_nonstop[['word', 'Essay']].drop_duplicates() \
+    .groupby(['word']) \
+    .size() \
+    .reset_index(name = 'doc_count') \
+    .sort_values('doc_count', ascending = False) \
     .reset_index(drop = True)
-
+    
+    
 #Looking at which essays government and other words appears more frequently 
-word_frequency= doc_lengths.loc[doc_lengths.word.isin([ 'one', 'government', 'people'])]
+# word_frequency = doc_lengths.loc[doc_lengths.word.isin([ 'one', 'government', 'people'])]
 
 #If we wanted to look at the percentage in total papers
 ##word_frequency['% of total papers'] = word_frequency['count'] / word_frequency['count'].sum()
 
 #Remove "Essay" from the Essay columns so we are only left with the number - just so we can fit everything into the graph
-word_frequency['Essay'] = pd.to_numeric(word_frequency['Essay'].astype(str).str[5:], errors='coerce')
+# word_frequency['Essay'] = pd.to_numeric(word_frequency['Essay'].astype(str).str[5:], errors='coerce')
 
-word_frequency.head()
+# word_frequency.head()
 
-#Resize the plot
+merged_counts = pd.merge(word_counts, 
+                         doc_lengths, 
+                         left_on = 'word', 
+                         right_on = 'word',
+                         how = 'inner')
+
+# Resize the plot
 plt.figure(figsize=(10,5))
-viz8 = sns.scatterplot(data=word_frequency, x="Essay", y="count", hue = 'word')
+viz8 = sns.scatterplot(data = merged_counts, 
+                       x = "doc_count", 
+                       y = "count",
+                       alpha = .3,
+                       color = "slateblue")
+
+# Set our labels
+viz8.set(ylabel = 'Word Frequency', 
+         xlabel = 'Document Frequency',
+         title = 'Word Frequency by Document Frequency')
 
 #Redo the x axis ticks 
 
-viz8.xaxis.set_major_locator(ticker.MultipleLocator(5))
-viz8.xaxis.set_major_formatter(ticker.ScalarFormatter())
-#Rotate X tick labels
+# viz8.xaxis.set_major_locator(ticker.MultipleLocator(5))
+# viz8.xaxis.set_major_formatter(ticker.ScalarFormatter())
 plt.show()
 
 # Save our plot to the Viz folder 
-viz8.savefig("Viz/Word Counts in Essays.png")
+viz8.figure.savefig("Viz/Word Frequency by Document Frequency.png")
 
+
+#%%
+# ----------------------------------------------------------------------------
+#                                   TF-IDF
+# ----------------------------------------------------------------------------
+# Building on our analysis above, we'll now look into the TF-IDF for each word.
 ####W should look for key words that would are unique to each author. Eventually do TF-IDF code here. 
+
+# Let's start by calculating term frequency. While we've mostly been looking at the word counts
+# across all documents, for term frequency, we care about the propoortion of times
+# the word appears in a given document. Ex: If a sentence is 10 words long and 
+# 'constitution' appears 3 times, its term frequency is .3 (30%).
+fed_analysis = merged_counts.copy()
+
+# Calculate the length of each essay
+doc_lengths = fed_nonstop.groupby(['Essay']) \
+    .size() \
+    .reset_index(name = 'doc_length') \
+    .reset_index(drop = True)
+    
+# Now let's figure out how many times a word appears in a given essay
+word_frequency = fed_nonstop.groupby(['word', 'Essay']) \
+    .size() \
+    .reset_index(name = 'word_freq') \
+    .sort_values('word') \
+    .reset_index(drop = True)
+
+# With these two dataframes, we can bring them together to calculate our tf score
+merged_tf = pd.merge(word_frequency, 
+                     doc_lengths, 
+                     left_on = 'Essay',
+                     right_on = 'Essay',
+                     how = 'inner')
+
+merged_tf['tf'] = merged_tf['word_freq'] / merged_tf['doc_length']
+
+
+# We can pull the inverse document frequency from our merged_counts dataframe above
+fed_analysis['idf'] = np.log(85 / fed_analysis['doc_count'])
+
+# Let's merge these (again) into one big dataframe
+tf_idf_df = pd.merge(merged_tf,
+                     fed_analysis,
+                     left_on = 'word',
+                     right_on = 'word',
+                     how = 'inner')
+
+tf_idf_df['tf_idf'] = tf_idf_df['tf'] * tf_idf_df['idf']
+
+
+#%%
+# ----------------------------------------------------------------------------
+#                                Viz 9: Top TF-IDF
+# ----------------------------------------------------------------------------
+# Let's see which words have the highest TF-IDF scores!
