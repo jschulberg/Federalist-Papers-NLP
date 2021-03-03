@@ -148,19 +148,9 @@ tokenized_df = tokenized_df.replace("Essay 07", "Essay 8")
 tokenized_df = tokenized_df.replace("Essay 08", "Essay 8")
 tokenized_df = tokenized_df.replace("Essay 09", "Essay 9")
 
-#Renaming the publishing names 
-tokenized_df = tokenized_df.replace("For the Independent Journal", "Independent Journal")
-tokenized_df = tokenized_df.replace("Frm the New York Packet", "New York Packet")
-tokenized_df = tokenized_df.replace("From the New York Packet", "New York Packet")
-tokenized_df = tokenized_df.replace("From McLEAN's Edition, New York", "McLEAN's Edition")
-tokenized_df = tokenized_df.replace("From McLEAN's Edition", "McLEAN's Edition")
-tokenized_df = tokenized_df.replace("From the Daily Advertiser",  "Daily Advertiser")
-tokenized_df = tokenized_df.replace("From The New York Packet",  "New York Packet")
-
-
-
-
-
+#Renaming Word and Line column 
+tokenized_df.rename(columns={'word':'Word'}, inplace=True)
+tokenized_df.rename(columns= {'lines': 'Lines'}, inplace= True)
 
 
 # ----------------------------------------------------------------------------
@@ -226,6 +216,14 @@ authors_clean['Date'] = pd.to_datetime(authors_clean['Date'].replace('--', 'NaN'
 # Replace blank ('--') publications with 'Unknown'
 authors_clean['Publication'] = authors_clean['Publication'].replace('--', 'Unknown')
 
+#Renaming the Publications
+authors_clean['Publication'] = authors_clean['Publication'].replace('For the Independent Journal', 'Independent Journal')
+authors_clean['Publication'] = authors_clean['Publication'].replace("Frm the New York Packet", "New York Packet")
+authors_clean['Publication'] = authors_clean['Publication'].replace("From the New York Packet", "New York Packet")
+authors_clean['Publication'] = authors_clean['Publication'].replace("From McLEAN's Edition, New York", "McLEAN's Edition")
+authors_clean['Publication'] = authors_clean['Publication'].replace("From McLEAN's Edition", "McLEAN's Edition")
+authors_clean['Publication'] = authors_clean['Publication'].replace("From the Daily Advertiser",  "Daily Advertiser")
+authors_clean['Publication'] = authors_clean['Publication'].replace("From The New York Packet",  "New York Packet")
 
 
 # ---------------------------------------------------------------------------- 
