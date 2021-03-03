@@ -148,6 +148,20 @@ tokenized_df = tokenized_df.replace("Essay 07", "Essay 8")
 tokenized_df = tokenized_df.replace("Essay 08", "Essay 8")
 tokenized_df = tokenized_df.replace("Essay 09", "Essay 9")
 
+#Renaming the publishing names 
+tokenized_df = tokenized_df.replace("For the Independent Journal", "Independent Journal")
+tokenized_df = tokenized_df.replace("Frm the New York Packet", "New York Packet")
+tokenized_df = tokenized_df.replace("From the New York Packet", "New York Packet")
+tokenized_df = tokenized_df.replace("From McLEAN's Edition, New York", "McLEAN's Edition")
+tokenized_df = tokenized_df.replace("From McLEAN's Edition", "McLEAN's Edition")
+tokenized_df = tokenized_df.replace("From the Daily Advertiser",  "Daily Advertiser")
+tokenized_df = tokenized_df.replace("From The New York Packet",  "New York Packet")
+
+
+
+
+
+
 
 # ----------------------------------------------------------------------------
 #                           Joining Authorship Data
