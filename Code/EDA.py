@@ -35,7 +35,7 @@ print(fed_papers.head())
 # some of these (stop words) out.
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
               'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
-              'this', 'might', 'and', 'us', 'can', 'as', 'to']
+              'this', 'might', 'and', 'us', 'can', 'as', 'to', 'could']
 
 fed_nonstop = fed_papers.copy()
 fed_nonstop = fed_nonstop[~fed_nonstop['word'].isin(stop_words)]
@@ -53,8 +53,6 @@ word_counts = fed_nonstop.groupby(['word']) \
     .reset_index(drop = True)
 
 print(word_counts.head(10))
-
-
 
 
 # ----------------------------------------------------------------------------
@@ -76,7 +74,7 @@ viz1.set(xlabel='Number of Appearances', ylabel='Word', title = 'Word Counts acr
 plt.show()
 
 # Save our plot to the Viz folder 
-viz1.figure.savefig("Viz/Top 20 Words.png")
+viz1.figure.savefig("Viz/Top_20_Words.png")
 
 
 # ----------------------------------------------------------------------------
@@ -98,7 +96,7 @@ viz2.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz2.figure.savefig("Viz/Document Lengths.png")
+viz2.figure.savefig("Viz/Document_Lengths.png")
 
 
 # ----------------------------------------------------------------------------
@@ -124,7 +122,7 @@ viz3.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Feder
 plt.show()
 
 # Save our plot to the Viz folder 
-viz3.savefig("Viz/Document Lengths by Author.png")
+viz3.savefig("Viz/Document_Lengths_by_Author.png")
 
 # ----------------------------------------------------------------------------
 #                         Viz 4-7: Top 10 Words by Author
@@ -166,7 +164,7 @@ viz4.set(xlabel='word', ylabel='count', title = 'Hamilton Top Words')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz4.figure.savefig("Viz/Hamilton Top Words.png")
+viz4.figure.savefig("Viz/Hamilton_Top_Words.png")
 
 
 #%% John Jay - Visualization 5--------------------------------------------------
@@ -203,7 +201,7 @@ viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz5.figure.savefig("Viz/Jay Top Words.png")
+viz5.figure.savefig("Viz/Jay_Top_Words.png")
 
 #%% Madison - Visualization 6-------------------------------------------------------
 
@@ -237,7 +235,7 @@ viz6.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz6.figure.savefig("Viz/Madison Top Words.png")
+viz6.figure.savefig("Viz/Madison_Top_Words.png")
 
 
 #%% Unknown - Visualization 7-------------------------------------------------------
@@ -274,7 +272,7 @@ plt.show()
 
 
 # Save our plot to the Viz folder 
-viz7.figure.savefig("Viz/Unknown Top Words.png")
+viz7.figure.savefig("Viz/Unknown_Top_Words.png")
 
 # ----------------------------------------------------------------------------
 #                      Viz 8: Word Count vs. Word Frequency
@@ -344,7 +342,7 @@ viz8.set(ylabel = 'Word Frequency',
 plt.show()
 
 # Save our plot to the Viz folder 
-viz8.figure.savefig("Viz/Word Frequency by Document Frequency.png")
+viz8.figure.savefig("Viz/Word_Frequency_by_Document_Frequency.png")
 
 
 #%%
@@ -434,16 +432,15 @@ sns.set_context('notebook')
 viz9 = sns.FacetGrid(authors_top_tf, 
                      col = "Author", 
                      sharex = False, 
-                     sharey = False
-                     )
+                     sharey = False)
 viz9.map(sns.barplot, "tf_idf", "word")
 
 
 # Set our labels
 # Set our labels
-viz9.set(xlabel='tf_idf', ylabel='word', title = 'Hamilton Top Words')
+viz9.set(xlabel='tf_idf', ylabel='word')
 plt.show()
 
 # Save our plot to the Viz folder 
-viz9.savefig("Viz/Top TF-IDF.png")
+viz9.savefig("Viz/Top_TF_IDF.png")
 

@@ -1,7 +1,6 @@
-### Federalist Papers
-##### A Natural Language Process (NLP) Analysis
+When Alexander Hamilton, John Jay, and James Madison came together in support of the ratification of the Constitution, they created what has become one of the most celebrated series of political texts in history. The Federalist Papers, a series of 85 essays, helped push New Yorkers towards ratification and laid some of the strongest arguments in favor of a strong Federal Government.
 
-The purpose of this script is to conduct basic exploratory data analysis on  the 85 essays in the Federalist Papers.
+This article applies various text analyses using modern Natural Language Processing (NLP) techniques to better understand these essay.
 
 
 ```python
@@ -25,25 +24,20 @@ print(fed_papers.head())
 
 ```
 
+First, we create a few dataframes that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us. 
+
 
 ```python
-
 # ----------------------------------------------------------------------------
 #                             Data Prep
 # ----------------------------------------------------------------------------
-# First, let's create a few dataframes that can be used for analysis purposes later on
-# Before we move on, there are a lot of unnecessary words here! Let's filter
-# some of these (stop words) out.
+
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
               'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
               'this', 'might', 'and', 'us', 'can', 'as', 'to']
 
 fed_nonstop = fed_papers.copy()
 fed_nonstop = fed_nonstop[~fed_nonstop['word'].isin(stop_words)]
-
-# It also looks like there are words that should be counted together (i.e. state
-# and states). Let's use a lemmatizer to solve this.
-
 
 
 # Start by creating a grouped dataframe of our word counts
@@ -53,8 +47,9 @@ word_counts = fed_nonstop.groupby(['word']) \
     .sort_values('count', ascending = False) \
     .reset_index(drop = True)
 
-print(word_counts.head(10))
 ```
+
+Now that our data has been cleaned up and organized a bit, let's take a look at the top 20 words that appear in The Federalist Papers.
 
 
 ```python
@@ -77,13 +72,16 @@ viz1.set(xlabel='Number of Appearances', ylabel='Word', title = 'Word Counts acr
 plt.show()
 ```
 
+Unsurprisingly, the word *state/states* and *government* appear more than almost any others. At the time, Hamilton, Madison, and Jay were arguing for the dissolution of The Articles of Confderation, the governing document for early America, which ceded immense power to the states. Most of the purpose of the Constitution was to shift power from the states to the Federal Government.
+
+Next, we will look at the lengths of each document using a violin plot. Violin plots are similar to boxplots, but can be a bit more visually descriptive by helping show you volume of documents by length.
+
 
 ```python
 # ----------------------------------------------------------------------------
 #                          Viz 2: Document Lengths
 # ----------------------------------------------------------------------------
-#%% Our second visualization will look at the lengths of each document,
-# as well as the average length of each one.
+
 doc_lengths = fed_papers.groupby(['essay']) \
     .size() \
     .reset_index(name = 'length') \
@@ -98,13 +96,15 @@ viz2.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
 plt.show()
 ```
 
+Most of the essays are somewhere between 500-1000 words, with some being *extremely* length. One essay is almost 2500 words!
+
+How do the lengths of the different essays vary by author? Is one author more verbose than the others? Let's take a look.
+
 
 ```python
 # ----------------------------------------------------------------------------
 #                      Viz 3: Document Lengths by Author
 # ----------------------------------------------------------------------------
-#%% Our third visualization will look at the lengths of each document,
-# as well as the average length of each one, disaggregated by author
 doc_lengths = fed_papers.groupby(['essay', 'Author']) \
     .size() \
     .reset_index(name = 'length') \
@@ -123,17 +123,16 @@ viz3.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Feder
 plt.show()
 ```
 
+A bit hard to tell from this visualization since Hamilton wrote *so* many essays. We can see that the lengthy essay (the 2500 word one) was written by Hamilton.
+
+Our next few visualization constitutes a bar chart of the top 10 words by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
+Unknown).
+
 
 ```python
-
-
 # ----------------------------------------------------------------------------
 #                         Viz 4-7: Top 10 Words by Author
 # ----------------------------------------------------------------------------
-# Our fourth  through seventh  visualization constitutes a bar chart of the top 10 words  
-# by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
-# Unknown).
-
 #Hamilton - Visualization 4------------------------------------------------------
 
 doc_lengths = fed_papers.groupby(['Author','word']) \
@@ -240,8 +239,6 @@ plt.show()
 
 
 ```python
-
-
 #Unknown - Visualization 7-------------------------------------------------------
 
 doc_lengths = fed_papers.groupby(['Author','word']) \
@@ -274,32 +271,21 @@ viz7.set_xticklabels(viz8.get_xticklabels(), rotation=45 )
 viz7.set(xlabel='word', ylabel='count', title = 'Unknown Top Words')
 plt.show()
 
+```
 
-# Save our plot to the Viz folder 
-viz7.savefig("Viz/Unknown Top Words.png")
+Let's dive a bit deeper into word usage throughout The Federalist Papers. We'll make a scatter plot of all the words
+that could reasonably appear in our dataset, measuring the number of times each one appears as well as the number of documents it appears in.
 
+The hope here is to take a look at what will eventually be the TF-IDF of each word: that way we can filter out words that appear many times but only in very few documents (i.e. 'Constitution' appears 100 times in total but 95 times in Essay 100.)
+
+Now let's create a grouped dataframe that counts the number of documents a given word appears in (document frequency). This is important to help us identify words that may appear many times but in the same document. A word is considered more "important" if it is not just a frequently occuring word within a document, but a word that appears across many documents.
+
+
+
+```python
 # ----------------------------------------------------------------------------
 #                      Viz 8: Word Count vs. Word Frequency
 # ----------------------------------------------------------------------------
-#%% Our eighth visualization constitues a scatter plot of all the words
-# that could reasonably appear in our dataset, measuring the number of times
-# each one appears as well as the number of documents it appears in.
-
-# The hope here is to take a look at what will eventually be the TF-IDF of each
-# word: that way we can filter out words that appear many times but only in very
-# few documents (i.e. 'Constitution' appears 100 times in total but 95 times
-# in Essay 100.)
-
-# Now let's create a grouped dataframe that counts the number of documents
-# a given word appears in (document frequency). This is important to help us identify
-# words that may appear many times but in the same document. A word is considered
-# more "important" if it is not just a frequently occuring word within a document, but a word that
-# appears across many documents
-# doc_lengths = fed_nonstop.groupby(['word','Essay']) \
-#     .Essay.count() \
-#     .reset_index(name = 'count') \
-#     .sort_values('count', ascending = False) \
-#     .reset_index(drop = True)
 
 doc_lengths = fed_nonstop[['word', 'Essay']].drop_duplicates() \
     .groupby(['word']) \
@@ -339,27 +325,17 @@ viz8.set(ylabel = 'Word Frequency',
          xlabel = 'Document Frequency',
          title = 'Word Frequency by Document Frequency')
 
-#Redo the x axis ticks 
-
-# viz8.xaxis.set_major_locator(ticker.MultipleLocator(5))
-# viz8.xaxis.set_major_formatter(ticker.ScalarFormatter())
 plt.show()
 
-# Save our plot to the Viz folder 
-viz8.figure.savefig("Viz/Word Frequency by Document Frequency.png")
+```
+
+Building on our analysis above, we'll now look into the TF-IDF for each word. Let's start by calculating term frequency. While we've mostly been looking at the word counts across all documents, for term frequency, we care about the propoortion of times the word appears in a given document. Ex: If a sentence is 10 words long and 'constitution' appears 3 times, its term frequency is .3 (30%).
 
 
-#%%
+```python
 # ----------------------------------------------------------------------------
 #                                   TF-IDF
 # ----------------------------------------------------------------------------
-# Building on our analysis above, we'll now look into the TF-IDF for each word.
-####W should look for key words that would are unique to each author. Eventually do TF-IDF code here. 
-
-# Let's start by calculating term frequency. While we've mostly been looking at the word counts
-# across all documents, for term frequency, we care about the propoortion of times
-# the word appears in a given document. Ex: If a sentence is 10 words long and 
-# 'constitution' appears 3 times, its term frequency is .3 (30%).
 fed_analysis = merged_counts.copy()
 
 # Calculate the length of each essay
@@ -396,11 +372,53 @@ tf_idf_df = pd.merge(merged_tf,
                      how = 'inner')
 
 tf_idf_df['tf_idf'] = tf_idf_df['tf'] * tf_idf_df['idf']
+```
+
+Let's see which words have the highest TF-IDF scores by author. This will help us identify the style of each author by looking at the words that they use most uniquely.
 
 
-#%%
+```python
 # ----------------------------------------------------------------------------
 #                                Viz 9: Top TF-IDF
 # ----------------------------------------------------------------------------
-# Let's see which words have the highest TF-IDF scores!
+
+authors = fed_nonstop[['essay', 'Author']].drop_duplicates()
+
+merged_df = tf_idf_df.merge(authors,
+                            left_on = 'Essay',
+                            right_on = 'essay')
+
+authors_tf = merged_df.groupby(['tf_idf', 'Author', 'word']) \
+    .size() \
+    .reset_index(name = 'tfidf') \
+    .sort_values('tf_idf', ascending = False) \
+    .reset_index(drop = True)
+    
+# Find our top 10 words for each author
+authors_top_tf = authors_tf.groupby('Author')['tf_idf'] \
+    .nlargest(10, keep = 'first') \
+    .reset_index(name = "tf_idf")
+
+# Unfortunately this drops the actual word, so let's merge it back on
+authors_top_tf = authors_top_tf.merge(authors_tf,
+                                      left_on = ['Author', 'tf_idf'],
+                                      right_on = ['Author', 'tf_idf'])
+
+# Set the theme
+sns.set_style('white')
+sns.set_context('notebook')
+
+# Build the visualization
+viz9 = sns.FacetGrid(authors_top_tf, 
+                     col = "Author", 
+                     sharex = False, 
+                     sharey = False)
+viz9.map(sns.barplot, "tf_idf", "word")
+
+# Set our labels
+viz9.set(xlabel='tf_idf', ylabel='word', title = 'Hamilton Top Words')
+plt.show()
+
 ```
+
+These TF-IDF scores give us a heightened sense of some of the most poignant words used by each author. For example, Hamilton seems wholly focused on the Judicial Branch of government (*courts*, *jury*, etc.). Although Madison similarly focused on the judiciary, he also cares quite a bit about the structure of government, referencing words like *faction* and *department(s)*.
