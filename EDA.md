@@ -1,14 +1,11 @@
-##EDA 
+### Federalist Papers
+##### A Natural Language Process (NLP) Analysis
 
-# ----------------------------------------------------------------------------
-#                                Purpose
-# ----------------------------------------------------------------------------
-# The purpose of this script is to conduct basic exploratory data analysis on 
-# the 85 essays in the Federalist Papers.
+The purpose of this script is to conduct basic exploratory data analysis on  the 85 essays in the Federalist Papers.
 
 
-
-#%% Load Data and import packages
+```python
+# Load Data and import packages
 import pandas as pd
 import numpy as np
 import nltk
@@ -26,7 +23,11 @@ fed_papers = pd.read_csv("Data/full_fedpapers.csv")
 
 print(fed_papers.head())
 
-#%%
+```
+
+
+```python
+
 # ----------------------------------------------------------------------------
 #                             Data Prep
 # ----------------------------------------------------------------------------
@@ -53,10 +54,10 @@ word_counts = fed_nonstop.groupby(['word']) \
     .reset_index(drop = True)
 
 print(word_counts.head(10))
+```
 
 
-
-
+```python
 # ----------------------------------------------------------------------------
 #                             Viz 1: Top 20 Words
 # ----------------------------------------------------------------------------
@@ -68,23 +69,22 @@ sns.set_context('notebook')
 # Build the visualization
 viz1 = sns.barplot(x = 'count',
             y = 'word',
-            data = word_counts[:20],
+            data = words_nonstop[:20],
             palette = "Purples_r")
 
 # Set our labels
 viz1.set(xlabel='Number of Appearances', ylabel='Word', title = 'Word Counts across all Federalist Papers')
 plt.show()
-
-# Save our plot to the Viz folder 
-viz1.figure.savefig("Viz/Top 20 Words.png")
+```
 
 
+```python
 # ----------------------------------------------------------------------------
 #                          Viz 2: Document Lengths
 # ----------------------------------------------------------------------------
 #%% Our second visualization will look at the lengths of each document,
 # as well as the average length of each one.
-doc_lengths = fed_nonstop.groupby(['essay']) \
+doc_lengths = fed_papers.groupby(['essay']) \
     .size() \
     .reset_index(name = 'length') \
     .sort_values('length', ascending = False) \
@@ -96,11 +96,10 @@ viz2 = sns.violinplot(y = doc_lengths['length'],
 # Set our labels
 viz2.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
 plt.show()
-
-# Save our plot to the Viz folder 
-viz2.figure.savefig("Viz/Document Lengths.png")
+```
 
 
+```python
 # ----------------------------------------------------------------------------
 #                      Viz 3: Document Lengths by Author
 # ----------------------------------------------------------------------------
@@ -122,20 +121,22 @@ viz3 = sns.catplot(x = 'Author',
 # Set our labels
 viz3.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Federalist Papers by Author')
 plt.show()
+```
 
-# Save our plot to the Viz folder 
-viz3.savefig("Viz/Document Lengths by Author.png")
+
+```python
+
 
 # ----------------------------------------------------------------------------
 #                         Viz 4-7: Top 10 Words by Author
 # ----------------------------------------------------------------------------
-#%% TODO: Our fourth  through seventh  visualization constitutes a bar chart of the top 10 words  
+# Our fourth  through seventh  visualization constitutes a bar chart of the top 10 words  
 # by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
 # Unknown).
 
 #Hamilton - Visualization 4------------------------------------------------------
 
-doc_lengths = fed_nonstop.groupby(['Author','word']) \
+doc_lengths = fed_papers.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -156,22 +157,21 @@ sns.set_context('notebook')
 viz4 = sns.barplot(x = 'word',
             y = 'count',
             data = Hamilton_top_words,
-            palette = "Purples_r")
+            palette = "flare")
 
 #Rotate X tick labels
-viz4.set_xticklabels(viz4.get_xticklabels(), rotation=45 )
+viz4.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz4.set(xlabel='word', ylabel='count', title = 'Hamilton Top Words')
 plt.show()
-
-# Save our plot to the Viz folder 
-viz4.figure.savefig("Viz/Hamilton Top Words.png")
+```
 
 
-#%% John Jay - Visualization 5--------------------------------------------------
+```python
+#John Jay - Visualization 5--------------------------------------------------
 
-doc_lengths = fed_nonstop.groupby(['Author','word']) \
+doc_lengths = fed_papers.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -193,21 +193,21 @@ sns.set_context('notebook')
 viz5 = sns.barplot(x = 'word',
             y = 'count',
             data = Jay_top_words,
-            palette = "Purples_r")
+            palette = "mako")
 
 #Rotate X tick labels
-viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
+viz5.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
 plt.show()
+```
 
-# Save our plot to the Viz folder 
-viz5.figure.savefig("Viz/Jay Top Words.png")
 
-#%% Madison - Visualization 6-------------------------------------------------------
+```python
+#Madison - Visualization 6-------------------------------------------------------
 
-doc_lengths = fed_nonstop.groupby(['Author','word']) \
+doc_lengths = fed_papers.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -227,22 +227,24 @@ sns.set_context('notebook')
 viz6 = sns.barplot(x = 'word',
             y = 'count',
             data = Madison_top_words,
-            palette = "Purples_r")
+            palette = "coolwarm")
 
 #Rotate X tick labels
-viz6.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
+viz6.set_xticklabels(viz7.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz6.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
 plt.show()
 
-# Save our plot to the Viz folder 
-viz6.figure.savefig("Viz/Madison Top Words.png")
+```
 
 
-#%% Unknown - Visualization 7-------------------------------------------------------
+```python
 
-doc_lengths = fed_nonstop.groupby(['Author','word']) \
+
+#Unknown - Visualization 7-------------------------------------------------------
+
+doc_lengths = fed_papers.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -263,10 +265,10 @@ sns.set_context('notebook')
 viz7 = sns.barplot(x = 'word',
             y = 'count',
             data = Unknown_top_words,
-            palette = "Purples_r")
+            palette = "YlOrBr")
 
 #Rotate X tick labels
-viz7.set_xticklabels(viz7.get_xticklabels(), rotation=45 )
+viz7.set_xticklabels(viz8.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz7.set(xlabel='word', ylabel='count', title = 'Unknown Top Words')
@@ -274,7 +276,7 @@ plt.show()
 
 
 # Save our plot to the Viz folder 
-viz7.figure.savefig("Viz/Unknown Top Words.png")
+viz7.savefig("Viz/Unknown Top Words.png")
 
 # ----------------------------------------------------------------------------
 #                      Viz 8: Word Count vs. Word Frequency
@@ -400,50 +402,5 @@ tf_idf_df['tf_idf'] = tf_idf_df['tf'] * tf_idf_df['idf']
 # ----------------------------------------------------------------------------
 #                                Viz 9: Top TF-IDF
 # ----------------------------------------------------------------------------
-# Let's see which words have the highest TF-IDF scores by author. This will
-# help us identify the style of each author by looking at the words that they
-# use most uniquely.
-
-authors = fed_nonstop[['essay', 'Author']].drop_duplicates()
-
-merged_df = tf_idf_df.merge(authors,
-                            left_on = 'Essay',
-                            right_on = 'essay')
-
-authors_tf = merged_df.groupby(['tf_idf', 'Author', 'word']) \
-    .size() \
-    .reset_index(name = 'tfidf') \
-    .sort_values('tf_idf', ascending = False) \
-    .reset_index(drop = True)
-    
-# Find our top 10 words for each author
-authors_top_tf = authors_tf.groupby('Author')['tf_idf'] \
-    .nlargest(10, keep = 'first') \
-    .reset_index(name = "tf_idf")
-
-# Unfortunately this drops the actual word, so let's merge it back on
-authors_top_tf = authors_top_tf.merge(authors_tf,
-                                      left_on = ['Author', 'tf_idf'],
-                                      right_on = ['Author', 'tf_idf'])
-
-# Set the theme
-sns.set_style('white')
-sns.set_context('notebook')
-
-# Build the visualization
-viz9 = sns.FacetGrid(authors_top_tf, 
-                     col = "Author", 
-                     sharex = False, 
-                     sharey = False
-                     )
-viz9.map(sns.barplot, "tf_idf", "word")
-
-
-# Set our labels
-# Set our labels
-viz9.set(xlabel='tf_idf', ylabel='word', title = 'Hamilton Top Words')
-plt.show()
-
-# Save our plot to the Viz folder 
-viz9.savefig("Viz/Top TF-IDF.png")
-
+# Let's see which words have the highest TF-IDF scores!
+```
