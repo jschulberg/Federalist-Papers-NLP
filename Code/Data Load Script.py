@@ -97,7 +97,7 @@ stop = stopwords.words('english')
 
 cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
                                             
-# TODO: remove stop words -- this isn't working for me :(
+# remove stop words -- this isn't working for me :(
 cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x for x in x.split()))
 
 # make everything lower case                

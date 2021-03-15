@@ -1,3 +1,19 @@
+---
+
+title: The Federalist Papers | NLP Analysis
+author: Justin Schulberg, Sabri Rafi
+date: '2021-03-10'
+slug: []
+categories:
+  - nlp
+  - history
+tags: []
+comments: yes
+image: 'images/fed_authors.jpeg'
+share: yes
+
+---
+
 When Alexander Hamilton, John Jay, and James Madison came together in support of the ratification of the Constitution, they created what has become one of the most celebrated series of political texts in history. The Federalist Papers, a series of 85 essays, helped push New Yorkers towards ratification and laid some of the strongest arguments in favor of a strong Federal Government.
 
 This article applies various text analyses using modern Natural Language Processing (NLP) techniques to better understand these essay.
@@ -23,6 +39,28 @@ fed_papers = pd.read_csv("Data/full_fedpapers.csv")
 print(fed_papers.head())
 
 ```
+
+                                                   lines     essay        word  \
+    0  addition defects already enumerated existing f...  Essay 22    addition   
+    1  addition defects already enumerated existing f...  Essay 22     defects   
+    2  addition defects already enumerated existing f...  Essay 22     already   
+    3  addition defects already enumerated existing f...  Essay 22  enumerated   
+    4  addition defects already enumerated existing f...  Essay 22    existing   
+    
+          Essay                                              Title    Author  \
+    0  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
+    1  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
+    2  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
+    3  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
+    4  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
+    
+                    Publication        Date  
+    0  From the New York Packet  1787-12-14  
+    1  From the New York Packet  1787-12-14  
+    2  From the New York Packet  1787-12-14  
+    3  From the New York Packet  1787-12-14  
+    4  From the New York Packet  1787-12-14  
+
 
 First, we create a few dataframes that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us. 
 
@@ -64,13 +102,19 @@ sns.set_context('notebook')
 # Build the visualization
 viz1 = sns.barplot(x = 'count',
             y = 'word',
-            data = words_nonstop[:20],
+            data = word_counts[:20],
             palette = "Purples_r")
 
 # Set our labels
 viz1.set(xlabel='Number of Appearances', ylabel='Word', title = 'Word Counts across all Federalist Papers')
 plt.show()
 ```
+
+
+    
+![png](EDA_files/EDA_6_0.png)
+    
+
 
 Unsurprisingly, the word *state/states* and *government* appear more than almost any others. At the time, Hamilton, Madison, and Jay were arguing for the dissolution of The Articles of Confderation, the governing document for early America, which ceded immense power to the states. Most of the purpose of the Constitution was to shift power from the states to the Federal Government.
 
@@ -95,6 +139,12 @@ viz2 = sns.violinplot(y = doc_lengths['length'],
 viz2.set(ylabel = 'Number of Words', title = 'Length of Federalist Papers ')
 plt.show()
 ```
+
+
+    
+![png](EDA_files/EDA_8_0.png)
+    
+
 
 Most of the essays are somewhere between 500-1000 words, with some being *extremely* length. One essay is almost 2500 words!
 
@@ -123,6 +173,12 @@ viz3.set(xlabel = 'Author', ylabel = 'Number of Words', title = 'Length of Feder
 plt.show()
 ```
 
+
+    
+![png](EDA_files/EDA_10_0.png)
+    
+
+
 A bit hard to tell from this visualization since Hamilton wrote *so* many essays. We can see that the lengthy essay (the 2500 word one) was written by Hamilton.
 
 Our next few visualization constitutes a bar chart of the top 10 words by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
@@ -130,12 +186,9 @@ Unknown).
 
 
 ```python
-# ----------------------------------------------------------------------------
-#                         Viz 4-7: Top 10 Words by Author
-# ----------------------------------------------------------------------------
 #Hamilton - Visualization 4------------------------------------------------------
 
-doc_lengths = fed_papers.groupby(['Author','word']) \
+doc_lengths = fed_nonstop.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -156,21 +209,32 @@ sns.set_context('notebook')
 viz4 = sns.barplot(x = 'word',
             y = 'count',
             data = Hamilton_top_words,
-            palette = "flare")
+            palette = "Purples_r")
 
 #Rotate X tick labels
-viz4.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
+viz4.set_xticklabels(viz4.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz4.set(xlabel='word', ylabel='count', title = 'Hamilton Top Words')
 plt.show()
+
+# Save our plot to the Viz folder 
+viz4.figure.savefig("Viz/Hamilton_Top_Words.png")
+
 ```
 
 
-```python
-#John Jay - Visualization 5--------------------------------------------------
+    
+![png](EDA_files/EDA_12_0.png)
+    
 
-doc_lengths = fed_papers.groupby(['Author','word']) \
+
+
+```python
+
+#%% John Jay - Visualization 5--------------------------------------------------
+
+doc_lengths = fed_nonstop.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -178,7 +242,6 @@ doc_lengths = fed_papers.groupby(['Author','word']) \
 
 Jay_top = doc_lengths.loc[doc_lengths.Author == 'Jay']
 Jay_top_words = Jay_top.head(17)
-
 
 
 Jay_top_words = Jay_top_words.copy()
@@ -192,21 +255,35 @@ sns.set_context('notebook')
 viz5 = sns.barplot(x = 'word',
             y = 'count',
             data = Jay_top_words,
-            palette = "mako")
+            palette = "Purples_r")
 
 #Rotate X tick labels
-viz5.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
+viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
 plt.show()
+
+# Save our plot to the Viz folder 
+viz5.figure.savefig("Viz/Jay_Top_Words.png")
+```
+
+
+    
+![png](EDA_files/EDA_13_0.png)
+    
+
+
+
+```python
+We can clearly see that...
 ```
 
 
 ```python
-#Madison - Visualization 6-------------------------------------------------------
+#%% Madison - Visualization 6-------------------------------------------------------
 
-doc_lengths = fed_papers.groupby(['Author','word']) \
+doc_lengths = fed_nonstop.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -226,22 +303,31 @@ sns.set_context('notebook')
 viz6 = sns.barplot(x = 'word',
             y = 'count',
             data = Madison_top_words,
-            palette = "coolwarm")
+            palette = "Purples_r")
 
 #Rotate X tick labels
-viz6.set_xticklabels(viz7.get_xticklabels(), rotation=45 )
+viz6.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz6.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
 plt.show()
 
+# Save our plot to the Viz folder 
+viz6.figure.savefig("Viz/Madison_Top_Words.png")
+
 ```
 
 
-```python
-#Unknown - Visualization 7-------------------------------------------------------
+    
+![png](EDA_files/EDA_15_0.png)
+    
 
-doc_lengths = fed_papers.groupby(['Author','word']) \
+
+
+```python
+#%% Unknown - Visualization 7-------------------------------------------------------
+
+doc_lengths = fed_nonstop.groupby(['Author','word']) \
     .Essay.count() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
@@ -262,16 +348,25 @@ sns.set_context('notebook')
 viz7 = sns.barplot(x = 'word',
             y = 'count',
             data = Unknown_top_words,
-            palette = "YlOrBr")
+            palette = "Purples_r")
 
 #Rotate X tick labels
-viz7.set_xticklabels(viz8.get_xticklabels(), rotation=45 )
+viz7.set_xticklabels(viz7.get_xticklabels(), rotation=45 )
 
 # Set our labels
 viz7.set(xlabel='word', ylabel='count', title = 'Unknown Top Words')
 plt.show()
 
+
+# Save our plot to the Viz folder 
+viz7.figure.savefig("Viz/Unknown_Top_Words.png")
 ```
+
+
+    
+![png](EDA_files/EDA_16_0.png)
+    
+
 
 Let's dive a bit deeper into word usage throughout The Federalist Papers. We'll make a scatter plot of all the words
 that could reasonably appear in our dataset, measuring the number of times each one appears as well as the number of documents it appears in.
@@ -283,10 +378,6 @@ Now let's create a grouped dataframe that counts the number of documents a given
 
 
 ```python
-# ----------------------------------------------------------------------------
-#                      Viz 8: Word Count vs. Word Frequency
-# ----------------------------------------------------------------------------
-
 doc_lengths = fed_nonstop[['word', 'Essay']].drop_duplicates() \
     .groupby(['word']) \
     .size() \
@@ -327,15 +418,20 @@ viz8.set(ylabel = 'Word Frequency',
 
 plt.show()
 
+# Save our plot to the Viz folder 
+viz8.figure.savefig("Viz/Word_Frequency_by_Document_Frequency.png")
 ```
+
+
+    
+![png](EDA_files/EDA_18_0.png)
+    
+
 
 Building on our analysis above, we'll now look into the TF-IDF for each word. Let's start by calculating term frequency. While we've mostly been looking at the word counts across all documents, for term frequency, we care about the propoortion of times the word appears in a given document. Ex: If a sentence is 10 words long and 'constitution' appears 3 times, its term frequency is .3 (30%).
 
 
 ```python
-# ----------------------------------------------------------------------------
-#                                   TF-IDF
-# ----------------------------------------------------------------------------
 fed_analysis = merged_counts.copy()
 
 # Calculate the length of each essay
@@ -372,6 +468,7 @@ tf_idf_df = pd.merge(merged_tf,
                      how = 'inner')
 
 tf_idf_df['tf_idf'] = tf_idf_df['tf'] * tf_idf_df['idf']
+
 ```
 
 Let's see which words have the highest TF-IDF scores by author. This will help us identify the style of each author by looking at the words that they use most uniquely.
@@ -421,4 +518,35 @@ plt.show()
 
 ```
 
+    /Users/Owner/opt/anaconda3/lib/python3.8/site-packages/seaborn/axisgrid.py:645: UserWarning: Using the barplot function without specifying `order` is likely to produce an incorrect plot.
+      warnings.warn(warning)
+
+
+
+    
+![png](EDA_files/EDA_22_1.png)
+    
+
+
 These TF-IDF scores give us a heightened sense of some of the most poignant words used by each author. For example, Hamilton seems wholly focused on the Judicial Branch of government (*courts*, *jury*, etc.). Although Madison similarly focused on the judiciary, he also cares quite a bit about the structure of government, referencing words like *faction* and *department(s)*.
+
+## Conclusion  
+Thanks for reading! We hope you were able to learn a bit more about the Federalist Papers. If you felt like the article was educational or interesting stay tuned for the next post, where we hope to provide text summarization, an interactive app, and a Tableau infographic. If you have ideas on other routes this could go, please send your suggestions -- the more ideas, the better!
+
+
+## Additional Resources    
+The original blog post can be found here:  
+*[Insert link here]*  
+
+Interested in seeing the original code? Go to the GitHub repository here:  
+**https://github.com/jschulberg/Federalist-Papers-NLP**  
+
+Interested in reading the original essays? Go to:  
+**https://guides.loc.gov/federalist-papers/text-1-10#s-lg-box-wrapper-25493264**  
+
+
+
+
+```python
+
+```

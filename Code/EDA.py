@@ -127,7 +127,7 @@ viz3.savefig("Viz/Document_Lengths_by_Author.png")
 # ----------------------------------------------------------------------------
 #                         Viz 4-7: Top 10 Words by Author
 # ----------------------------------------------------------------------------
-#%% TODO: Our fourth  through seventh  visualization constitutes a bar chart of the top 10 words  
+#%% Our fourth  through seventh  visualization constitutes a bar chart of the top 10 words  
 # by word count of each author (John Jay, Alexander Hamilton, James Madison, or 
 # Unknown).
 
@@ -202,6 +202,7 @@ plt.show()
 
 # Save our plot to the Viz folder 
 viz5.figure.savefig("Viz/Jay_Top_Words.png")
+
 
 #%% Madison - Visualization 6-------------------------------------------------------
 
@@ -291,11 +292,6 @@ viz7.figure.savefig("Viz/Unknown_Top_Words.png")
 # words that may appear many times but in the same document. A word is considered
 # more "important" if it is not just a frequently occuring word within a document, but a word that
 # appears across many documents
-# doc_lengths = fed_nonstop.groupby(['word','Essay']) \
-#     .Essay.count() \
-#     .reset_index(name = 'count') \
-#     .sort_values('count', ascending = False) \
-#     .reset_index(drop = True)
 
 doc_lengths = fed_nonstop[['word', 'Essay']].drop_duplicates() \
     .groupby(['word']) \
@@ -335,10 +331,6 @@ viz8.set(ylabel = 'Word Frequency',
          xlabel = 'Document Frequency',
          title = 'Word Frequency by Document Frequency')
 
-#Redo the x axis ticks 
-
-# viz8.xaxis.set_major_locator(ticker.MultipleLocator(5))
-# viz8.xaxis.set_major_formatter(ticker.ScalarFormatter())
 plt.show()
 
 # Save our plot to the Viz folder 
