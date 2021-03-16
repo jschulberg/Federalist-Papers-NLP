@@ -46,13 +46,13 @@ fed_nonstop = fed_nonstop[~fed_nonstop['Word'].isin(stop_Words)]
 
 
 # Start by creating a grouped dataframe of our Word counts
-Word_counts = fed_nonstop.groupby(['Word']) \
+word_counts = fed_nonstop.groupby(['Word']) \
     .size() \
     .reset_index(name = 'count') \
     .sort_values('count', ascending = False) \
     .reset_index(drop = True)
 
-print(Word_counts.head(10))
+print(word_counts.head(10))
 
 
 # ----------------------------------------------------------------------------
@@ -66,7 +66,7 @@ sns.set_context('notebook')
 # Build the visualization
 viz1 = sns.barplot(x = 'count',
             y = 'Word',
-            data = Word_counts[:20],
+            data = word_counts[:20],
             palette = "Purples_r")
 
 # Set our labels
@@ -312,7 +312,7 @@ doc_lengths = fed_nonstop[['Word', 'Essay']].drop_duplicates() \
 
 # Word_frequency.head()
 
-merged_counts = pd.merge(Word_counts, 
+merged_counts = pd.merge(word_counts, 
                          doc_lengths, 
                          left_on = 'Word', 
                          right_on = 'Word',
