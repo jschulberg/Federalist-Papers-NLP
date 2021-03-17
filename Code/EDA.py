@@ -43,6 +43,16 @@ fed_nonstop = fed_nonstop[~fed_nonstop['Word'].isin(stop_Words)]
 # It also looks like there are Words that should be counted together (i.e. state
 # and states). Let's use a lemmatizer to solve this.
 
+#import nltk
+
+#w_tokenizer = nltk.tokenize.WhitespaceTokenizer()
+#lemmatizer = nltk.stem.WordNetLemmatizer()
+
+#def lemmatize_text(text):
+    return [lemmatizer.lemmatize(w) for w in w_tokenizer.tokenize(text)]
+
+#fed_nonstop_words['lemmatized_text'] = fed_nonstop_words.apply(lemmatize_text)
+#print(fed_nonstop['text_lemmatized'])
 
 
 # Start by creating a grouped dataframe of our Word counts
