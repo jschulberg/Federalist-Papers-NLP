@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[99]:
-
-
 ##Text Analysis - Cosine Similarity/Other Text Analysis
 
 # ----------------------------------------------------------------------------
@@ -18,9 +12,6 @@ import pandas as pd
 import nltk
 import os
 import requests
-
-
-# In[100]:
 
 
 # ----------------------------------------------------------------------------
@@ -55,7 +46,6 @@ for text_file in files:
     text_df = text_df.append(temp_df)
 
 
-# In[101]:
 
 
 #%% Data cleaning
@@ -79,9 +69,6 @@ cleaned_df.reset_index(drop = True, inplace = True)
 cleaned_df_filtered = cleaned_df[cleaned_df['essay'] != '.DS_Store']
 
 cleaned_df_filtered.head(10)
-
-
-# In[102]:
 
 
 #%% Text Cleaning
@@ -110,22 +97,16 @@ fed_papers = cleaned_df_filtered.copy()
 fed_papers.head()
 
 
-# In[103]:
-
-
 # ----------------------------------------------------------------------------
 #                           Cosine Similarity
 # ----------------------------------------------------------------------------
-# The purpose of this section is do analyze the texts using cosine similarity.
+# The purpose of this section is analyze the texts using cosine similarity.
 # Cosine similarity is calculated by measuring the angle of the cosine between two vectors. 
 # The smaller the angle, the higher the cosine similarity.
 # Magnitute is not important in cosine similarity, only orientation. This is useful
 # in text analysis because even if two documents have varying lengths, they could 
 # still be related in terms of content. 
-# In text analysis, this is what makes it more advantageous than other distance measures. 
-
-
-# In[104]:
+# This is what makes it more advantageous than other distance measures in text analysis. 
 
 
 #Grouping all of the lines by essay number
@@ -137,13 +118,7 @@ fed_papers= fed_papers["lines"].agg(lambda column: "".join(column))
 fed_papers = fed_papers.reset_index(name="lines")
 
 
-# In[105]:
-
-
 fed_papers.head()
-
-
-# In[106]:
 
 
 #Converts lines into a vectorized TF-IDF
@@ -155,30 +130,19 @@ fed_transform = TfidfVectorizer().fit_transform(fed_papers['lines'])
 fed_transform
 
 
-# In[107]:
-
-
 #Slicing the matrix to get a submatrix in each row
 #Let's take a look at the first Essay
 
 fed_transform[0:1]
 
 
-# In[108]:
-
-
 #Importing a linear kernal 
 from sklearn.metrics.pairwise import linear_kernel
 
 
-# In[109]:
-
 
 #Getting similarites through the linear kernal 
 fed_cosine_similarities = linear_kernel(fed_transform[0:1],fed_transform).flatten()
-
-
-# In[110]:
 
 
 fed_cosine_similarities
@@ -188,7 +152,6 @@ fed_cosine_similarities
 # The range is from 0-1. 1 meaning they are the most similar, 0 meaning they are the least similar. 
 # As you can see the "1" in the first row and column is because it is comparing the first Essay to itself.
 
-# In[111]:
 
 
 #Sorting the cosine similarities
@@ -196,9 +159,6 @@ fed_cosine_similarities
 
 related_essays = fed_cosine_similarities.argsort()[:-7:-1]
 related_essays
-
-
-# In[113]:
 
 
 #Cosine Similarity of the related essays
@@ -223,27 +183,17 @@ fed_cosine_similarities[related_essays]
 # 
 # 5.	Essay 40 - Madison - From the New York Packet - The Powers of the Convention to Form a Mixed Government Examined and Sustained - Friday, January 18, 1788
 
-# In[124]:
-
+##----------------------------------------------------------------------------------------------
 
 #Let's take a look at one of the unknown Essays - Essay 52
 fed_transform[51:52]
-
-
-# In[127]:
 
 
 #Getting similarites through the linear kernal 
 fed_cosine_similarities = linear_kernel(fed_transform[51:52],fed_transform).flatten()
 
 
-# In[128]:
-
-
 fed_cosine_similarities
-
-
-# In[129]:
 
 
 #Sorting the cosine similarities
@@ -252,41 +202,31 @@ fed_cosine_similarities
 related_essays = fed_cosine_similarities.argsort()[:-7:-1]
 related_essays
 
-
-# In[130]:
-
-
 #Cosine Similarity of the related essays
 fed_cosine_similarities[related_essays]
 
 
-# In[ ]:
+#Essay 52 - Unknown - From the New York Packet - The House of Representatives - Friday, February 8, 1788
 
 
-Essay 52 - Unknown - From the New York Packet - The House of Representatives - Friday, February 8, 1788
+#Excluding itself, the five most similar Essays to Essay 49 were the following: 
+
+#1. Essay 55 - Unknown - From the New York Packet - The Total Number of the House of Representatives - Friday, February 15, 1788
 
 
-Excluding itself, the five most similar Essays to Essay 49 were the following: 
-
-1. Essay 55 - Unknown - From the New York Packet - The Total Number of the House of Representatives - Friday, February 15, 1788
+#2. Essay 63 - Unknown - For the Independent Journal - The Senate 
 
 
-2. Essay 63 - Unknown - For the Independent Journal - The Senate 
-
-
-3. Essay 53 - Unknown - From the New York Packet - The Same Subject Continued: The House of Representatives - Tuesday, February 12, 1788
+#3. Essay 53 - Unknown - From the New York Packet - The Same Subject Continued: The House of Representatives - Tuesday, February 12, 1788
 
 
 
-4. Essay 39 - Madison -  For the Independent Journal - Conformity of the Plan to Republican Principles
+#4. Essay 39 - Madison -  For the Independent Journal - Conformity of the Plan to Republican Principles
 
 
-5.Essay 59 - Hamilton - From the New York Packet Concerning the Power of Congress to Regulate the Election of Members - Friday, February 22, 1788
+#5.Essay 59 - Hamilton - From the New York Packet Concerning the Power of Congress to Regulate the Election of Members - Friday, February 22, 1788
 
-
-# In[ ]:
-
-
+#-------------------------------------------------------------------------------------------------------
 #To Do 
 #Loop through the similarities, figure which Essays were related to each and put it into a dataframe. 
 #Create a methodology where we sort which Essays were most similar to which author. 
