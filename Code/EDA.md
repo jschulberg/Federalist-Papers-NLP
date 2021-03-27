@@ -16,13 +16,9 @@ share: yes
 
 When Alexander Hamilton, John Jay, and James Madison came together in support of the ratification of the Constitution, they created what has become one of the most celebrated series of political texts in history. The Federalist Papers, a series of 85 essays, helped push New Yorkers towards ratification and laid some of the strongest arguments in favor of a strong Federal Government.
 
-This article applies various text analyses using modern Natural Language Processing (NLP) techniques to better understand these essays.
+In part one of our analysis, we perform an Exploratory Data Analysis (EDA) using modern Natural Language Processing (NLP) techniques to to better understand these essays. We will showcase insightful visualizations that help us learn more about each individual author's writing style, word counts, and the frequency in which those words appear in the essays.
 
-In part one of our analysis, we perform an EDA (Exploratory Data Analysis) to create an overview of the main characteristics of these essays. We will showcase insightful visualizations that help us learn more about each individual author's writing style, word counts, and the frequency in which those words appear in the essays.
-
-In future parts of our analysis, we will perform a text summarization to allow readers to get a precursory understanding of the topics each essay discusses.
-
-Finally, we will transform this information into a data science application so you will have this information readily accessible to you!
+In future analyses, we will perform text summarization to allow readers to get a precursory understanding of the topics each essay discusses, cosine similarity to understand which essays are most related, and even try to build an interactive application that makes it easy to understand the essays.
 
 Here is part one of our analysis.
  
@@ -35,15 +31,16 @@ import numpy as np
 import nltk
 import seaborn as sns
 import matplotlib.pyplot as plt
+import os
 
 ### NLTK Download
 # Note: To download nltk products, you need to run the nltk downloader. If you 
 # just want to run this quickly, uncomment the following line and run:
 # nltk.download('popular')
 
-# Note that I created a Spyder prjoect in my federalist-papers-nlp folder so I
-# can just reference the "Data" folder without all the stuff that comes before it.
-fed_papers = pd.read_csv("Data/full_fedpapers.csv")
+# Note that we need to go back one folder to the parent directory so that we can actually access the Data/ folder
+parent_dir = os.path.realpath('..')
+fed_papers = pd.read_csv(parent_dir + "/Data/full_fedpapers.csv")
 
 print(fed_papers.head())
 
@@ -71,7 +68,7 @@ print(fed_papers.head())
     4  From the New York Packet  1787-12-14  
 
 
-First, we create a few data frames that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us. 
+First, we create a few data frames that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us (i.e. stop words). 
 
 
 ```python
@@ -81,7 +78,8 @@ First, we create a few data frames that can be used for analysis purposes later 
 
 stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
               'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
-              'this', 'might', 'and', 'us', 'can', 'as', 'to']
+              'this', 'might', 'and', 'us', 'can', 'as', 'to', 'make', 'made',
+             'much']
 
 fed_nonstop = fed_papers.copy()
 fed_nonstop = fed_nonstop[~fed_nonstop['word'].isin(stop_words)]
@@ -227,9 +225,6 @@ viz4.set_xticklabels(viz4.get_xticklabels(), rotation=45 )
 viz4.set(xlabel='word', ylabel='count', title = 'Hamilton Top Words')
 plt.show()
 
-# Save our plot to the Viz folder 
-viz4.figure.savefig("Viz/Hamilton_Top_Words.png")
-
 ```
 
 
@@ -274,8 +269,6 @@ viz6.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
 viz6.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
 plt.show()
 
-# Save our plot to the Viz folder 
-viz6.figure.savefig("Viz/Madison_Top_Words.png")
 
 ```
 
@@ -322,8 +315,6 @@ viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
 viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
 plt.show()
 
-# Save our plot to the Viz folder 
-viz5.figure.savefig("Viz/Jay_Top_Words.png")
 ```
 
 
@@ -369,8 +360,6 @@ viz7.set(xlabel='word', ylabel='count', title = 'Unknown Top Words')
 plt.show()
 
 
-# Save our plot to the Viz folder 
-viz7.figure.savefig("Viz/Unknown_Top_Words.png")
 ```
 
 
@@ -382,7 +371,7 @@ viz7.figure.savefig("Viz/Unknown_Top_Words.png")
 Let's dive a bit deeper into word usage throughout The Federalist Papers. We'll make a scatter plot of all the words
 that could reasonably appear in our dataset, measuring the number of times each one appears as well as the number of documents it appears in.
 
-The hope here is to take a look at what will eventually be the TF-IDF of each word: that way we can filter out words that appear many times but only in very few documents (i.e. 'Constitution' appears 100 times in total but 95 times in Essay 100.)
+The hope here is to take a look at what will eventually be the TF-IDF of each word: that way we can filter out words that appear many times but only in very few documents (like if 'Constitution' were to appear 100 times in total but 95 times in Essay 100.)
 
 Now let's create a grouped dataframe that counts the number of documents a given word appears in (document frequency). This is important to help us identify words that may appear many times but in the same document. A word is considered more "important" if it is not just a frequently occuring word within a document, but a word that appears across many documents.
 
@@ -395,18 +384,6 @@ doc_lengths = fed_nonstop[['word', 'Essay']].drop_duplicates() \
     .reset_index(name = 'doc_count') \
     .sort_values('doc_count', ascending = False) \
     .reset_index(drop = True)
-    
-    
-#Looking at which essays government and other words appears more frequently 
-# word_frequency = doc_lengths.loc[doc_lengths.word.isin([ 'one', 'government', 'people'])]
-
-#If we wanted to look at the percentage in total papers
-##word_frequency['% of total papers'] = word_frequency['count'] / word_frequency['count'].sum()
-
-#Remove "Essay" from the Essay columns so we are only left with the number - just so we can fit everything into the graph
-# word_frequency['Essay'] = pd.to_numeric(word_frequency['Essay'].astype(str).str[5:], errors='coerce')
-
-# word_frequency.head()
 
 merged_counts = pd.merge(word_counts, 
                          doc_lengths, 
@@ -429,8 +406,7 @@ viz8.set(ylabel = 'Word Frequency',
 
 plt.show()
 
-# Save our plot to the Viz folder 
-viz8.figure.savefig("Viz/Word_Frequency_by_Document_Frequency.png")
+
 ```
 
 
@@ -518,31 +494,23 @@ sns.set_context('notebook')
 
 # Build the visualization
 viz9 = sns.FacetGrid(authors_top_tf, 
-                     col = "Author", 
+                     col = "Author",
+                     hue = 'Author', 
+                     palette = 'Purples_r',
                      sharex = False, 
                      sharey = False)
 viz9.map(sns.barplot, "tf_idf", "word")
 
 # Set our labels
-viz9.set(xlabel='tf_idf', ylabel='word', title = 'Hamilton Top Words')
+viz9.set(xlabel='tf_idf', ylabel='word')
 plt.show()
 
 ```
 
-    /Users/Owner/opt/anaconda3/lib/python3.8/site-packages/seaborn/axisgrid.py:645: UserWarning: Using the barplot function without specifying `order` is likely to produce an incorrect plot.
-      warnings.warn(warning)
-
-
-
-    
-![png](EDA_files/EDA_24_1.png)
-    
-
-
 These TF-IDF scores give us a heightened sense of some of the most poignant words used by each author. For example, Hamilton seems wholly focused on the Judicial Branch of government (*courts*, *jury*, etc.). Although Madison similarly focused on the judiciary, he also cares quite a bit about the structure of government, referencing words like *faction* and *department(s)*.
 
 ## Conclusion  
-Thanks for reading! We hope you were able to learn a bit more about the Federalist Papers. If you feltlike the article was educational or interesting stay tuned for the next post, where we hope to provide text summarization, an interactive app, and a Tableau infographic. If you have ideas on other routes this could go, please send your suggestions -- the more ideas, the better!
+Thanks for reading! We hope you were able to learn a bit more about the Federalist Papers. If you felt like the article was educational or interesting stay tuned for the next post, where we hope to provide text summarization, an interactive app, and a Tableau infographic. If you have ideas on other routes this could go, please comment your suggestions -- the more ideas, the better!
 
 
 ## Additional Resources    
@@ -557,8 +525,3 @@ Interested in seeing the original code? Go to the GitHub repository here:
 Interested in reading the original essays? Go to:  
 **https://guides.loc.gov/federalist-papers/text-1-10#s-lg-box-wrapper-25493264**  
 
-
-
-```python
-
-```
