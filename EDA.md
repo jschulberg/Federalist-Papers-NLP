@@ -1,6 +1,6 @@
 ---
 
-title: The Federalist Papers | NLP Analysis
+title: The Federalist Papers | NLP Analysis (Part 1)
 author: Justin Schulberg, Sabri Rafi
 date: '2021-03-10'
 slug: []
@@ -16,7 +16,16 @@ share: yes
 
 When Alexander Hamilton, John Jay, and James Madison came together in support of the ratification of the Constitution, they created what has become one of the most celebrated series of political texts in history. The Federalist Papers, a series of 85 essays, helped push New Yorkers towards ratification and laid some of the strongest arguments in favor of a strong Federal Government.
 
-This article applies various text analyses using modern Natural Language Processing (NLP) techniques to better understand these essay.
+This article applies various text analyses using modern Natural Language Processing (NLP) techniques to better understand these essays.
+
+In part one of our analysis, we perform an EDA (Exploratory Data Analysis) to create an overview of the main characteristics of these essays. We will showcase insightful visualizations that help us learn more about each individual author's writing style, word counts, and the frequency in which those words appear in the essays.
+
+In future parts of our analysis, we will perform a text summarization to allow readers to get a precursory understanding of the topics each essay discusses.
+
+Finally, we will transform this information into a data science application so you will have this information readily accessible to you!
+
+Here is part one of our analysis.
+ 
 
 
 ```python
@@ -62,7 +71,7 @@ print(fed_papers.head())
     4  From the New York Packet  1787-12-14  
 
 
-First, we create a few dataframes that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us. 
+First, we create a few data frames that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us. 
 
 
 ```python
@@ -116,7 +125,7 @@ plt.show()
     
 
 
-Unsurprisingly, the word *state/states* and *government* appear more than almost any others. At the time, Hamilton, Madison, and Jay were arguing for the dissolution of The Articles of Confderation, the governing document for early America, which ceded immense power to the states. Most of the purpose of the Constitution was to shift power from the states to the Federal Government.
+Unsurprisingly, the word *state/states* and *government* appear more than almost any others. At the time, Hamilton, Madison, and Jay were arguing for the dissolution of The Articles of Confederation, the governing document for early America, which ceded immense power to the states. Most of the purpose of the Constitution was to shift power from the states to the Federal Government.
 
 Next, we will look at the lengths of each document using a violin plot. Violin plots are similar to boxplots, but can be a bit more visually descriptive by helping show you volume of documents by length.
 
@@ -229,59 +238,12 @@ viz4.figure.savefig("Viz/Hamilton_Top_Words.png")
     
 
 
-
-```python
-
-#%% John Jay - Visualization 5--------------------------------------------------
-
-doc_lengths = fed_nonstop.groupby(['Author','word']) \
-    .Essay.count() \
-    .reset_index(name = 'count') \
-    .sort_values('count', ascending = False) \
-    .reset_index(drop = True)
-
-Jay_top = doc_lengths.loc[doc_lengths.Author == 'Jay']
-Jay_top_words = Jay_top.head(17)
-
-
-Jay_top_words = Jay_top_words.copy()
-Jay_top_words = Jay_top_words[~Jay_top_words['word'].isin(stop_words)]
-
-# Set the theme
-sns.set_style('white')
-sns.set_context('notebook')
-
-# Build the visualization
-viz5 = sns.barplot(x = 'word',
-            y = 'count',
-            data = Jay_top_words,
-            palette = "Purples_r")
-
-#Rotate X tick labels
-viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
-
-# Set our labels
-viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
-plt.show()
-
-# Save our plot to the Viz folder 
-viz5.figure.savefig("Viz/Jay_Top_Words.png")
-```
-
-
-    
-![png](EDA_files/EDA_13_0.png)
-    
+Hamilton's ardent support in favor of a strong centralized government is evident here. 5 out of the top 6 words included "power", "one", "government", "national", and "union". 
 
 
 
 ```python
-We can clearly see that...
-```
-
-
-```python
-#%% Madison - Visualization 6-------------------------------------------------------
+#%% Madison - Visualization 5-------------------------------------------------------
 
 doc_lengths = fed_nonstop.groupby(['Author','word']) \
     .Essay.count() \
@@ -319,9 +281,58 @@ viz6.figure.savefig("Viz/Madison_Top_Words.png")
 
 
     
-![png](EDA_files/EDA_15_0.png)
+![png](EDA_files/EDA_14_0.png)
     
 
+
+Madison's top words shared some similarities with Hamilton's. Both authors had the word "states" and "governments" as their top words of choice. Additionally, out of their 15 top words, they shared 10 words in common, which indicates that the authors were thinking on a similar wavelength. 
+
+
+```python
+
+#%% John Jay - Visualization 6--------------------------------------------------
+
+doc_lengths = fed_nonstop.groupby(['Author','word']) \
+    .Essay.count() \
+    .reset_index(name = 'count') \
+    .sort_values('count', ascending = False) \
+    .reset_index(drop = True)
+
+Jay_top = doc_lengths.loc[doc_lengths.Author == 'Jay']
+Jay_top_words = Jay_top.head(17)
+
+
+Jay_top_words = Jay_top_words.copy()
+Jay_top_words = Jay_top_words[~Jay_top_words['word'].isin(stop_words)]
+
+# Set the theme
+sns.set_style('white')
+sns.set_context('notebook')
+
+# Build the visualization
+viz5 = sns.barplot(x = 'word',
+            y = 'count',
+            data = Jay_top_words,
+            palette = "Purples_r")
+
+#Rotate X tick labels
+viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
+
+# Set our labels
+viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
+plt.show()
+
+# Save our plot to the Viz folder 
+viz5.figure.savefig("Viz/Jay_Top_Words.png")
+```
+
+
+    
+![png](EDA_files/EDA_16_0.png)
+    
+
+
+In comparison, Jay's top words seem to strike a different tone with his top word being "treaties". There isn't a strong cohesive theme that can be gathered from his top word choice alone. When compared to Hamilton and Madison however, it is clear that he took a different route to convey his support for having a centralized government. 
 
 
 ```python
@@ -364,7 +375,7 @@ viz7.figure.savefig("Viz/Unknown_Top_Words.png")
 
 
     
-![png](EDA_files/EDA_16_0.png)
+![png](EDA_files/EDA_18_0.png)
     
 
 
@@ -424,11 +435,11 @@ viz8.figure.savefig("Viz/Word_Frequency_by_Document_Frequency.png")
 
 
     
-![png](EDA_files/EDA_18_0.png)
+![png](EDA_files/EDA_20_0.png)
     
 
 
-Building on our analysis above, we'll now look into the TF-IDF for each word. Let's start by calculating term frequency. While we've mostly been looking at the word counts across all documents, for term frequency, we care about the propoortion of times the word appears in a given document. Ex: If a sentence is 10 words long and 'constitution' appears 3 times, its term frequency is .3 (30%).
+Building on our analysis above, we'll now look into the TF-IDF for each word. Let's start by calculating term frequency. While we've mostly been looking at the word counts across all documents, for term frequency, we care about the proportion of times the word appears in a given document. Ex: If a sentence is 10 words long and 'constitution' appears 3 times, its term frequency is .3 (30%).
 
 
 ```python
@@ -524,26 +535,27 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_22_1.png)
+![png](EDA_files/EDA_24_1.png)
     
 
 
 These TF-IDF scores give us a heightened sense of some of the most poignant words used by each author. For example, Hamilton seems wholly focused on the Judicial Branch of government (*courts*, *jury*, etc.). Although Madison similarly focused on the judiciary, he also cares quite a bit about the structure of government, referencing words like *faction* and *department(s)*.
 
 ## Conclusion  
-Thanks for reading! We hope you were able to learn a bit more about the Federalist Papers. If you felt like the article was educational or interesting stay tuned for the next post, where we hope to provide text summarization, an interactive app, and a Tableau infographic. If you have ideas on other routes this could go, please send your suggestions -- the more ideas, the better!
+Thanks for reading! We hope you were able to learn a bit more about the Federalist Papers. If you feltlike the article was educational or interesting stay tuned for the next post, where we hope to provide text summarization, an interactive app, and a Tableau infographic. If you have ideas on other routes this could go, please send your suggestions -- the more ideas, the better!
 
 
 ## Additional Resources    
-The original blog post can be found here:  
-*[Insert link here]*  
+Interested in seeing the original blog post and our other work? 
+
+1. Justin's blog site: https://www.datacracy.us/
+2. Sabri's blog site: https://www.datascienceinnovators.com/
 
 Interested in seeing the original code? Go to the GitHub repository here:  
 **https://github.com/jschulberg/Federalist-Papers-NLP**  
 
 Interested in reading the original essays? Go to:  
 **https://guides.loc.gov/federalist-papers/text-1-10#s-lg-box-wrapper-25493264**  
-
 
 
 
