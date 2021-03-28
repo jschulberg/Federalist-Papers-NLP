@@ -287,5 +287,5 @@ print(joined_fedpapers.head(10))
 #                                  Save Work
 # ----------------------------------------------------------------------------
 # Let's write our final dataframe out to a csv file so it's easier to do EDA.
-joined_fedpapers.to_csv("Data/full_fedpapers.csv", index = False)
+joined_fedpapers.to_csv(parent_dir + "/Data/full_fedpapers.csv", index = False)
 
