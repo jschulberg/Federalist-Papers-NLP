@@ -276,7 +276,7 @@ authors_clean['Publication'] = authors_clean['Publication'].replace("From The Ne
 #                             Join Authorship Data
 # ----------------------------------------------------------------------------
 #%% Using the work we prepared above, let's merge this with our actual data.
-joined_fedpapers = tokenized_df.merge(authors_clean, 
+joined_fedpapers = lemmatized_df.merge(authors_clean, 
                                       left_on = 'Essay',
                                       right_on = 'Essay',
                                       how = 'inner')

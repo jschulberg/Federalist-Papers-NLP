@@ -7,7 +7,8 @@ slug: []
 categories:
   - nlp
   - history
-tags: []
+tags: 
+  - python
 comments: yes
 image: 'images/fed_authors.jpeg'
 share: yes
@@ -40,32 +41,32 @@ import os
 
 # Note that we need to go back one folder to the parent directory so that we can actually access the Data/ folder
 parent_dir = os.path.realpath('..')
-fed_papers = pd.read_csv(parent_dir + "/Data/full_fedpapers.csv")
+fed_papers = pd.read_csv(parent_dir + "/Data/full_fedpapers.csv").rename(columns = {'Lemmatized_Word': 'word'})
 
 print(fed_papers.head())
 
 ```
 
-                                                   lines     essay        word  \
+                                                   Lines     Essay        Word  \
     0  addition defects already enumerated existing f...  Essay 22    addition   
     1  addition defects already enumerated existing f...  Essay 22     defects   
     2  addition defects already enumerated existing f...  Essay 22     already   
     3  addition defects already enumerated existing f...  Essay 22  enumerated   
     4  addition defects already enumerated existing f...  Essay 22    existing   
     
-          Essay                                              Title    Author  \
-    0  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
-    1  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
-    2  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
-    3  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
-    4  Essay 22  The Same Subject Continued: Other Defects of t...  Hamilton   
+             word                                              Title    Author  \
+    0    addition  The Same Subject Continued: Other Defects of t...  Hamilton   
+    1      defect  The Same Subject Continued: Other Defects of t...  Hamilton   
+    2     already  The Same Subject Continued: Other Defects of t...  Hamilton   
+    3  enumerated  The Same Subject Continued: Other Defects of t...  Hamilton   
+    4    existing  The Same Subject Continued: Other Defects of t...  Hamilton   
     
-                    Publication        Date  
-    0  From the New York Packet  1787-12-14  
-    1  From the New York Packet  1787-12-14  
-    2  From the New York Packet  1787-12-14  
-    3  From the New York Packet  1787-12-14  
-    4  From the New York Packet  1787-12-14  
+           Publication        Date  
+    0  New York Packet  1787-12-14  
+    1  New York Packet  1787-12-14  
+    2  New York Packet  1787-12-14  
+    3  New York Packet  1787-12-14  
+    4  New York Packet  1787-12-14  
 
 
 First, we create a few data frames that can be used for analysis purposes later on. To generate these datasets, we have to get rid of some of the unnecessary words that don't signify very much to us (i.e. stop words). 
@@ -133,7 +134,7 @@ Next, we will look at the lengths of each document using a violin plot. Violin p
 #                          Viz 2: Document Lengths
 # ----------------------------------------------------------------------------
 
-doc_lengths = fed_papers.groupby(['essay']) \
+doc_lengths = fed_papers.groupby(['Essay']) \
     .size() \
     .reset_index(name = 'length') \
     .sort_values('length', ascending = False) \
@@ -162,7 +163,7 @@ How do the lengths of the different essays vary by author? Is one author more ve
 # ----------------------------------------------------------------------------
 #                      Viz 3: Document Lengths by Author
 # ----------------------------------------------------------------------------
-doc_lengths = fed_papers.groupby(['essay', 'Author']) \
+doc_lengths = fed_papers.groupby(['Essay', 'Author']) \
     .size() \
     .reset_index(name = 'length') \
     .sort_values('length', ascending = False) \
@@ -466,11 +467,11 @@ Let's see which words have the highest TF-IDF scores by author. This will help u
 #                                Viz 9: Top TF-IDF
 # ----------------------------------------------------------------------------
 
-authors = fed_nonstop[['essay', 'Author']].drop_duplicates()
+authors = fed_nonstop[['Essay', 'Author']].drop_duplicates()
 
 merged_df = tf_idf_df.merge(authors,
                             left_on = 'Essay',
-                            right_on = 'essay')
+                            right_on = 'Essay')
 
 authors_tf = merged_df.groupby(['tf_idf', 'Author', 'word']) \
     .size() \
@@ -496,6 +497,7 @@ sns.set_context('notebook')
 viz9 = sns.FacetGrid(authors_top_tf, 
                      col = "Author",
                      hue = 'Author', 
+                     col_wrap = 3,
                      palette = 'Purples_r',
                      sharex = False, 
                      sharey = False)
