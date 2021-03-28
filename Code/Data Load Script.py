@@ -24,6 +24,8 @@ import requests
 # nltk.download('popular')
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
+from nltk.stem import WordNetLemmatizer
+
 
 
 # ----------------------------------------------------------------------------
@@ -34,8 +36,11 @@ from nltk.tokenize import word_tokenize
 # Initialize an empty dataframe to hold all of our text
 text_df = pd.DataFrame(columns = ["lines", "essay"])
 
+# Note that we need to go back one folder to the parent directory so that we can actually access the Data/ folder
+parent_dir = os.path.realpath('..')
+
 # List all of the files in our Data folder
-files = os.listdir("Data")
+files = os.listdir(parent_dir + "/Data/")
 
 # We may have non-text files in here, so let's remove these from our lists
 txt_files = filter(lambda x: x[-5:] == '.txt', files)
@@ -51,7 +56,7 @@ for text_file in txt_files:
     print(f"About to load {text_file} in")
     print(f"============================")
         
-    temp_df = pd.read_csv('Data/' + text_file, # Read the text file in our data folder
+    temp_df = pd.read_csv(parent_dir + '/Data/' + text_file, # Read the text file in our data folder
                           delimiter = '\n', # Looks like every line ends with \n
                           header = None, # Read from the first line
                           names = ["lines"], # Column header
@@ -64,7 +69,7 @@ for text_file in txt_files:
     text_df = text_df.append(temp_df)
 
 # Take a look at our data
-text_df.head(10)
+print(text_df.head(10))
 
 
 # ----------------------------------------------------------------------------
@@ -94,6 +99,13 @@ cleaned_df_filtered = cleaned_df[cleaned_df['essay'] != '.DS_Store']
 #%% It's important to ensure that the text we analyze is clean. That is, no
 # punctuation, everything lowercase, removal of stop words, etc.
 stop = stopwords.words('english')
+# additional stop words
+stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
+              'this', 'might', 'and', 'us', 'can', 'as', 'to', 'make', 'made',
+             'much']
+
+# fed_nonstop = fed_nonstop[~fed_nonstop['word'].isin(stop_words)]
 
 cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
                                             
@@ -102,6 +114,7 @@ cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".
 
 # make everything lower case                
 cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x.lower() for x in x.split() if x not in stop))
+cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x.lower() for x in x.split() if x not in stop_words))
 
 
 ## Removing puncutation 
@@ -135,24 +148,57 @@ tokenized_df = tokenized_df.explode('word')
 print(tokenized_df.head(10))
 
 #Renamed the column here to "Essay" so that we can perform an inner join. 
-tokenized_df = tokenized_df.rename(columns = {'essay': 'Essay'})
+tokenized_df = tokenized_df.rename(columns = {'essay': 'Essay', 'word':'Word', 'lines': 'Lines'}) \
+    .reset_index(drop = True)
 
 #Rnamed all the Essays so that they would match up to the authors_clean dataframe when merging. 
-tokenized_df = tokenized_df.replace("Essay 01", "Essay 1")
-tokenized_df = tokenized_df.replace("Essay 02", "Essay 2")
-tokenized_df = tokenized_df.replace("Essay 03", "Essay 3")
-tokenized_df = tokenized_df.replace("Essay 04", "Essay 4")
-tokenized_df = tokenized_df.replace("Essay 05", "Essay 5")
-tokenized_df = tokenized_df.replace("Essay 06", "Essay 6")
-tokenized_df = tokenized_df.replace("Essay 07", "Essay 8")
-tokenized_df = tokenized_df.replace("Essay 08", "Essay 8")
-tokenized_df = tokenized_df.replace("Essay 09", "Essay 9")
-
-#Renaming Word and Line column 
-tokenized_df.rename(columns={'word':'Word'}, inplace=True)
-tokenized_df.rename(columns= {'lines': 'Lines'}, inplace= True)
+tokenized_df = tokenized_df.replace("Essay 01", "Essay 1") \
+    .replace("Essay 02", "Essay 2") \
+    .replace("Essay 03", "Essay 3") \
+    .replace("Essay 04", "Essay 4") \
+    .replace("Essay 05", "Essay 5") \
+    .replace("Essay 06", "Essay 6") \
+    .replace("Essay 07", "Essay 8") \
+    .replace("Essay 08", "Essay 8") \
+    .replace("Essay 09", "Essay 9")
 
 
+
+#%% Lemmatization
+# Because a lot of the words are similar, but not exactly (like state and states), 
+# we'll use a lemmatization method to find the canonical version of each.
+lemmatizer = nltk.stem.WordNetLemmatizer()
+
+# Initialize two dataframes:
+    # 1. Error DataFrame | This will keep track of any words that have issues in
+    #                       the lemmatizer
+    # 2. Lemmatized DataFrame | This will be a copy of our original dataframe
+error_df = pd.DataFrame(columns = ['idx', 'word', 'line', 'essay'])
+
+lemmatized_df = tokenized_df.copy()
+lemmatized_df['Lemmatized_Word'] = lemmatized_df['Word']
+
+# lemmatized_df = lemmatized_df.assign(col_lemma = lemmatized_df['Word'].apply(lambda x: lemmatize(x))
+# lemmatized_df['word_lemmatized'] = lemmatized_df['Word'].apply(lemmatize_text)
+for idx, word in lemmatized_df.iterrows():
+    print(f"\nRunning code on Word #{idx}:")
+    try:
+        lemmatized_df['Lemmatized_Word'][idx] = lemmatizer.lemmatize(word['Word'])
+    # For some words, the lemmatizer isn't working. Let's log these and revisit
+    # them later
+    except:
+        # In the meantime, let's just keep the word as is
+        lemmatized_df['Lemmatized_Word'][idx] = word['Word']
+        
+        # Log our errors
+        to_append = [idx, word['Word'], word['Lines'], word['Essay']]
+        a_series = pd.Series(to_append, index = error_df.columns)
+        error_df = error_df.append(a_series, ignore_index=True)
+    print(f"{word['Word']} --> {word['Lemmatized_Word']}")
+
+
+
+#%%
 # ----------------------------------------------------------------------------
 #                           Joining Authorship Data
 # ----------------------------------------------------------------------------
@@ -167,7 +213,7 @@ tokenized_df.rename(columns= {'lines': 'Lines'}, inplace= True)
 # ----------------------------------------------------------------------------
 #                                Scrape Website
 # ----------------------------------------------------------------------------
-#%% We'll start by using a combination of the requests and pandas package to 
+# We'll start by using a combination of the requests and pandas package to 
 # parse the HTML of the site of interest to pull the table in as a dataframe.
 
 # URL of the page we'd like to scrape
@@ -230,7 +276,7 @@ authors_clean['Publication'] = authors_clean['Publication'].replace("From The Ne
 #                             Join Authorship Data
 # ----------------------------------------------------------------------------
 #%% Using the work we prepared above, let's merge this with our actual data.
-joined_fedpapers = tokenized_df.merge(authors_clean, 
+joined_fedpapers = lemmatized_df.merge(authors_clean, 
                                       left_on = 'Essay',
                                       right_on = 'Essay',
                                       how = 'inner')
@@ -241,5 +287,5 @@ print(joined_fedpapers.head(10))
 #                                  Save Work
 # ----------------------------------------------------------------------------
 # Let's write our final dataframe out to a csv file so it's easier to do EDA.
-joined_fedpapers.to_csv("Data/full_fedpapers.csv", index = False)
+joined_fedpapers.to_csv(parent_dir + "/Data/full_fedpapers.csv", index = False)
 
