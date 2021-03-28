@@ -507,6 +507,16 @@ plt.show()
 
 ```
 
+    /Users/Owner/opt/anaconda3/lib/python3.8/site-packages/seaborn/axisgrid.py:645: UserWarning: Using the barplot function without specifying `order` is likely to produce an incorrect plot.
+      warnings.warn(warning)
+
+
+
+    
+![png](EDA_files/EDA_24_1.png)
+    
+
+
 These TF-IDF scores give us a heightened sense of some of the most poignant words used by each author. For example, Hamilton seems wholly focused on the Judicial Branch of government (*courts*, *jury*, etc.). Although Madison similarly focused on the judiciary, he also cares quite a bit about the structure of government, referencing words like *faction* and *department(s)*.
 
 ## Conclusion  
