@@ -10,7 +10,7 @@ categories:
 tags: 
   - python
 comments: yes
-image: 'images/fed_authors.jpeg'
+featured_image: 'images/fed_authors.jpeg'
 share: yes
 
 ---
@@ -33,6 +33,11 @@ import nltk
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+from IPython.display import set_matplotlib_formats
+%matplotlib inline
+
+# plt.rcParams["figure.figsize"] = (16,12)
+set_matplotlib_formats('svg')
 
 ### NLTK Download
 # Note: To download nltk products, you need to run the nltk downloader. If you 
@@ -120,11 +125,11 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_6_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_6_0.svg)
     
 
 
-Unsurprisingly, the word *state/states* and *government* appear more than almost any others. At the time, Hamilton, Madison, and Jay were arguing for the dissolution of The Articles of Confederation, the governing document for early America, which ceded immense power to the states. Most of the purpose of the Constitution was to shift power from the states to the Federal Government.
+Unsurprisingly, the words *state* and *government* appear more than almost any others. At the time, Hamilton, Madison, and Jay were arguing for the dissolution of The Articles of Confederation, the governing document for early America, which ceded immense power to the states. Most of the purpose of the Constitution was to shift power from the states to the Federal Government.
 
 Next, we will look at the lengths of each document using a violin plot. Violin plots are similar to boxplots, but can be a bit more visually descriptive by helping show you volume of documents by length.
 
@@ -150,7 +155,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_8_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_8_0.svg)
     
 
 
@@ -183,7 +188,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_10_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_10_0.svg)
     
 
 
@@ -230,7 +235,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_12_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_12_0.svg)
     
 
 
@@ -258,16 +263,16 @@ sns.set_style('white')
 sns.set_context('notebook')
 
 # Build the visualization
-viz6 = sns.barplot(x = 'word',
+viz5 = sns.barplot(x = 'word',
             y = 'count',
             data = Madison_top_words,
             palette = "Purples_r")
 
 #Rotate X tick labels
-viz6.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
+viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
 
 # Set our labels
-viz6.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
+viz5.set(xlabel='word', ylabel='count', title = 'Madison Top Words')
 plt.show()
 
 
@@ -275,7 +280,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_14_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_14_0.svg)
     
 
 
@@ -304,23 +309,23 @@ sns.set_style('white')
 sns.set_context('notebook')
 
 # Build the visualization
-viz5 = sns.barplot(x = 'word',
+viz6 = sns.barplot(x = 'word',
             y = 'count',
             data = Jay_top_words,
             palette = "Purples_r")
 
 #Rotate X tick labels
-viz5.set_xticklabels(viz5.get_xticklabels(), rotation=45 )
+viz6.set_xticklabels(viz6.get_xticklabels(), rotation=45 )
 
 # Set our labels
-viz5.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
+viz6.set(xlabel='word', ylabel='count', title = 'Jay Top Words')
 plt.show()
 
 ```
 
 
     
-![png](EDA_files/EDA_16_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_16_0.svg)
     
 
 
@@ -365,7 +370,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_18_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_18_0.svg)
     
 
 
@@ -412,7 +417,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_20_0.png)
+![svg](EDA_Part_1_files/EDA_Part_1_20_0.svg)
     
 
 
@@ -515,7 +520,7 @@ plt.show()
 
 
     
-![png](EDA_files/EDA_24_1.png)
+![svg](EDA_Part_1_files/EDA_Part_1_24_1.svg)
     
 
 
@@ -536,4 +541,7 @@ Interested in seeing the original code? Go to the GitHub repository here:
 
 Interested in reading the original essays? Go to:  
 **https://guides.loc.gov/federalist-papers/text-1-10#s-lg-box-wrapper-25493264**  
+
+Interested in reading this post on Medium? Go to:
+**https://sabridatascience.medium.com/nlp-analysis-of-the-federalist-papers-in-python-part-1-2c44ed8c42d1**
 
