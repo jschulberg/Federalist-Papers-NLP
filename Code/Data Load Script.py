@@ -1,6 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Tue Apr  6 19:55:57 2021
+
+@author: Owner
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Sat Feb 13 11:18:02 2021
 
 @author: Owner
@@ -17,6 +25,7 @@ import pandas as pd
 import nltk
 import os
 import requests
+import string 
 
 ### NLTK Download
 # Note: To download nltk products, you need to run the nltk downloader. If you 
@@ -37,7 +46,7 @@ from nltk.stem import WordNetLemmatizer
 text_df = pd.DataFrame(columns = ["lines", "essay"])
 
 # Note that we need to go back one folder to the parent directory so that we can actually access the Data/ folder
-parent_dir = os.path.realpath('..')
+parent_dir = os.path.realpath('')
 
 # List all of the files in our Data folder
 files = os.listdir(parent_dir + "/Data/")
@@ -72,14 +81,147 @@ for text_file in txt_files:
 print(text_df.head(10))
 
 
+#%% Lemmatization
+# Because a lot of the words are similar, but not exactly (like state and states), 
+# we'll use a lemmatization method to find the canonical version of each.
+lemmatizer = nltk.stem.WordNetLemmatizer()
+
+# Initialize two dataframes:
+    # 1. Error DataFrame | This will keep track of any words that have issues in
+    #                       the lemmatizer
+    # 2. Lemmatized DataFrame | This will be a copy of our original dataframe
+error_df = pd.DataFrame(columns = ['idx', 'word', 'line', 'essay'])
+
+#%%
+# The following function would map the treebank tags to WordNet part of speech names
+# This specifically helps with lemmatizing based on the word's part of speech
+from nltk.corpus import wordnet
+
+def get_wordnet_pos(treebank_tag):
+
+    if treebank_tag.startswith('J'):
+        return wordnet.ADJ
+    elif treebank_tag.startswith('V'):
+        return wordnet.VERB
+    elif treebank_tag.startswith('N'):
+        return wordnet.NOUN
+    elif treebank_tag.startswith('R'):
+        return wordnet.ADV
+    else:
+        return ''
+    
+
+#%% It's important to ensure that the text we keep is meaningful.
+# To assist with this, we want to filter out any stop words, which don't
+# mean much to us
+stop = stopwords.words('english')
+# additional stop words
+stop.extend(['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
+              'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
+              'this', 'might', 'and', 'us', 'can', 'as', 'to', 'make', 'made',
+             'much'])
+
+
+#%% Define a word check that returns what we'd like
+def lemmatize_words(word, pos):
+    '''
+    A function to lemmatize a word and, if not, return the lowercase version
+    of the original word
+    
+    Parameters
+    ----------
+    word : string
+        word to be lemmatized.
+    pos : string
+        part of speech of the word.
+
+    Returns
+    -------
+    lemmatized_word : string
+        lemmatized word.
+
+    '''
+    
+    # Make everything lowercase and lemmatize based on pos                    
+    try:
+        # Lemmatize our word using the predefined function in the previous cell
+        lemmatized_word = lemmatizer.lemmatize(word.lower(), pos = get_wordnet_pos(pos))
+    # For some words, the lemmatizer isn't working. Let's log these and revisit
+    # them later
+    except:
+        # If we hit an error, let's just keep the word as is
+        lemmatized_word = word.lower()
+    
+    print(f"\t\t* Keeping\t{word} \t-->\t\t{lemmatized_word}")
+        
+    return lemmatized_word
+
+# ----------------------------------------------------------------------------
+#%%                              Part of Speech Tagging
+# ----------------------------------------------------------------------------
+# Next, we'll try to build out a dataframe, simultaneously taking out stop words
+# and tagging the parts of speech.
+
+# Initialize empty lists for each of the columns we'll want
+index_list = []
+essay_list = []
+line_list = []
+word_list = []
+lemmatized_word_list = []
+part_of_speech_list = []
+
+
+# Start by converting our two columns to lists so they're easier to work with
+lines = list(text_df['lines'])
+essays = list(text_df['essay'])
+
+
+# Let's zip the lists together so we can simultaneously iterate through them
+for idx, item in enumerate(zip(lines, essays)):
+    # if idx > 100:
+    #     break
+    print("\n\n===========================================")
+    print(f"\t\t\t\tIndex {idx}:")
+    print("===========================================")
+    
+    # Build a list of tokens for the given line
+    tokens = nltk.word_tokenize(item[0])
+        
+    # Figure out the parts of speech for each word in our line
+    pos_tags = nltk.pos_tag(tokens)
+    print(f"{item}\n")
+    
+    # Loop through our words and parts of speech to lemmatize and remove stop words
+    for word, pos in pos_tags:
+        # Filter out any stop words (all lowercase) or punctuation
+        if word.lower() in stop or word in string.punctuation or not word.isalpha():
+            print(f"Removing '{word}'")
+            continue
+        else:
+            lemmatized_word = lemmatize_words(word, pos)
+        
+        # Now we can append our results to our lists above
+        index_list.append(idx)
+        essay_list.append(item[1])
+        line_list.append(item[0])
+        word_list.append(word)
+        lemmatized_word_list.append(lemmatized_word)
+        part_of_speech_list.append(pos)
+
+
+#%% Append results to dataframe
+cleaned_df = pd.DataFrame(list(zip(index_list, essay_list, line_list, word_list, 
+                      lemmatized_word_list, part_of_speech_list)),
+               columns = ['line_index', 'essay', 'lines', 'word', 'lemmatized_word', 
+                          'part_of_speech'])
+
+
+
 # ----------------------------------------------------------------------------
 #                                   Data Cleaning
 # ----------------------------------------------------------------------------
 #%% The essays come in in the format 'Essay22.txt', and we'd prefer if it just 
 # said 'Essay 22'
-# Let's start by saving our dataframe as a new object
-cleaned_df = text_df.copy()
-
 # Remove .txt first
 cleaned_df['essay'] = cleaned_df['essay'].str.replace('.txt', '')
 
@@ -96,30 +238,6 @@ cleaned_df.reset_index(drop = True, inplace = True)
 cleaned_df_filtered = cleaned_df[cleaned_df['essay'] != '.DS_Store']
 
 
-#%% It's important to ensure that the text we analyze is clean. That is, no
-# punctuation, everything lowercase, removal of stop words, etc.
-stop = stopwords.words('english')
-# additional stop words
-stop_words = ['would', 'may', 'yet', 'must', 'shall', 'not', 'still', 'let', 
-              'also', 'ought', 'a', 'the', 'it', 'i', 'upon', 'but', 'if', 'in',
-              'this', 'might', 'and', 'us', 'can', 'as', 'to', 'make', 'made',
-             'much']
-
-# fed_nonstop = fed_nonstop[~fed_nonstop['word'].isin(stop_words)]
-
-cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].str.replace('[^A-z]', ' ').str.replace(' +', ' ').str.strip()
-                                            
-# remove stop words -- this isn't working for me :(
-cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x for x in x.split()))
-
-# make everything lower case                
-cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x.lower() for x in x.split() if x not in stop))
-cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].apply(lambda x: " ".join(x.lower() for x in x.split() if x not in stop_words))
-
-
-## Removing puncutation 
-# cleaned_df_filtered['lines'] = cleaned_df_filtered['lines'].str.replace('[^\w\s]','')
-
 
 print(cleaned_df_filtered.head(10))
 
@@ -133,19 +251,6 @@ print(cleaned_df_filtered.head(10))
 
 # Start by creating a new copy of our dataframe
 tokenized_df = cleaned_df_filtered.copy()
-
-# Let's look at one tokenized output
-word_tokenize(tokenized_df['lines'][1])
-
-# Tokenize the words for every row
-tokenized_df['word'] = tokenized_df['lines'].apply(nltk.word_tokenize)
-
-# This puts the words in a given line as a list, but we still need this "exploded"
-# into separate rows. Note: This will end up enlarging our dataframe from 16,000
-# rows to almost 200,000!
-tokenized_df = tokenized_df.explode('word')
-
-print(tokenized_df.head(10))
 
 #Renamed the column here to "Essay" so that we can perform an inner join. 
 tokenized_df = tokenized_df.rename(columns = {'essay': 'Essay', 'word':'Word', 'lines': 'Lines'}) \
@@ -161,40 +266,6 @@ tokenized_df = tokenized_df.replace("Essay 01", "Essay 1") \
     .replace("Essay 07", "Essay 8") \
     .replace("Essay 08", "Essay 8") \
     .replace("Essay 09", "Essay 9")
-
-
-
-#%% Lemmatization
-# Because a lot of the words are similar, but not exactly (like state and states), 
-# we'll use a lemmatization method to find the canonical version of each.
-lemmatizer = nltk.stem.WordNetLemmatizer()
-
-# Initialize two dataframes:
-    # 1. Error DataFrame | This will keep track of any words that have issues in
-    #                       the lemmatizer
-    # 2. Lemmatized DataFrame | This will be a copy of our original dataframe
-error_df = pd.DataFrame(columns = ['idx', 'word', 'line', 'essay'])
-
-lemmatized_df = tokenized_df.copy()
-lemmatized_df['Lemmatized_Word'] = lemmatized_df['Word']
-
-# lemmatized_df = lemmatized_df.assign(col_lemma = lemmatized_df['Word'].apply(lambda x: lemmatize(x))
-# lemmatized_df['word_lemmatized'] = lemmatized_df['Word'].apply(lemmatize_text)
-for idx, word in lemmatized_df.iterrows():
-    print(f"\nRunning code on Word #{idx}:")
-    try:
-        lemmatized_df['Lemmatized_Word'][idx] = lemmatizer.lemmatize(word['Word'])
-    # For some words, the lemmatizer isn't working. Let's log these and revisit
-    # them later
-    except:
-        # In the meantime, let's just keep the word as is
-        lemmatized_df['Lemmatized_Word'][idx] = word['Word']
-        
-        # Log our errors
-        to_append = [idx, word['Word'], word['Lines'], word['Essay']]
-        a_series = pd.Series(to_append, index = error_df.columns)
-        error_df = error_df.append(a_series, ignore_index=True)
-    print(f"{word['Word']} --> {word['Lemmatized_Word']}")
 
 
 
@@ -276,7 +347,7 @@ authors_clean['Publication'] = authors_clean['Publication'].replace("From The Ne
 #                             Join Authorship Data
 # ----------------------------------------------------------------------------
 #%% Using the work we prepared above, let's merge this with our actual data.
-joined_fedpapers = lemmatized_df.merge(authors_clean, 
+joined_fedpapers = tokenized_df.merge(authors_clean, 
                                       left_on = 'Essay',
                                       right_on = 'Essay',
                                       how = 'inner')
